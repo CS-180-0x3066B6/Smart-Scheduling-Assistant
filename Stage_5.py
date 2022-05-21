@@ -76,7 +76,8 @@ def find_date(image_text: str)->list[str]:
 
     # If multiple dates are found by dateutil.parser, split the string and parse each string
     except parser.ParserError2:
-        mult_dates = dateSplit(date_str)
+        # mult_dates = dateSplit(date_str.split())
+        mult_dates = bucket_filter(date_str.split())
         dates.extend(mult_dates)
     
     return dates
@@ -238,7 +239,39 @@ def coreParser(date_str):
 
 
 
-
+def bucket_filter(some_splitting: list[str])->list[str]:
+    bucket: list[str] = []
+    bucket_output: list[str] = []
+    old_length: int = 0
+    while len(some_splitting) != 0:
+        bucket.append(some_splitting.pop())
+        attempted_extraction = find_date(" ".join(bucket))
+        if len(attempted_extraction) ==  0:
+            continue
+        else:
+            extracted = attempted_extraction[0]
+            if len(extracted) == 10:
+                bucket_output.append(extracted)
+                bucket.clear()
+            if len(some_splitting) == 0:
+               return bucket_output 
+            if len(extracted) == 7:
+                if old_length == 7:
+                    bucket_output.append(extracted)
+                    bucket.clear()
+                    old_length = 0
+                else:
+                    old_length = 7
+                continue
+            if len(extracted) == 4:
+                if old_length == 4:
+                    bucket_output.append(extracted)
+                    bucket.clear()
+                    old_length = 0
+                else:
+                    old_length = 4
+                continue
+    return bucket_output
 
 
 
