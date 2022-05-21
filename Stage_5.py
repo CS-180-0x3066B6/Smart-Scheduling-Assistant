@@ -1,4 +1,6 @@
 import datetime
+
+from matplotlib import image
 import dateutil.parser as parser
 import dateutil.relativedelta as rel
 
@@ -53,7 +55,7 @@ days = [('1', '1st'),
         ('30', '30th'),
         ('31', '31st')]
 
-def find_date(image_text:str):
+def parseCategorizer(image_text: str)->list[str]:
     """
     Finds the date of the image.
     """
@@ -70,68 +72,63 @@ def find_date(image_text:str):
 
     # If the date is not found by dateutil.parser, statically check for date insights
     except parser.ParserError:
-        print("Error 1: No date format found, checking for date insights...")
         date = dateInsightChecking(date_str)
         if date != None:
             dates.append(date.strftime(date_format))
 
     # If multiple dates are found by dateutil.parser, split the string and parse each string
     except parser.ParserError2:
-        print("Error 2: Multiple dates found, splitting string...")
-        mult_dates = dateSplit(date_str)
+        mult_dates = find_date(date_str)
         dates.extend(mult_dates)
     
     return dates
 
 
-def dateSplit(date_str):
+def find_date(date_str):
     # Check for the number of words in date_str
-    str_words = date_str.split()
-    strlen = len(str_words)
-
-    splitIndx = strlen//2
-    firstHalf = str_words[:splitIndx]
-    secondHalf = str_words[splitIndx:]
-
-
-    isMonth = False
-    isDay = False
-    # Error checking
-        # Day-Month pair (no commas)
-    for month in months:
-        for month in month:
-            if firstHalf[-1].replace(',', '') in month:
-                isMonth = True
-                print(firstHalf[-1].replace(',', ''))
-                break
-
-    for day in days:
-        for day in day:
-            if secondHalf[0].replace(',', '') in day:
-                isDay = True
-                print(secondHalf[0].replace(',', ''))
-                break
-
-    if isMonth and isDay:
-        secondHalf.insert(0, firstHalf.pop())
-        # A date might have been cut
-
+    
+    firstHalf, secondHalf = dateSplit(date_str)
 
     str1 = " ".join(firstHalf)
+    str1 = str1.replace(',', ' ')
     str2 = " ".join(secondHalf)
-
+    str2 = str2.replace(',', ' ')
 
     # Try for first half of the string
-    dates1 = find_date(str1)
+    dates1 = parseCategorizer(str1)
     # Try for second half of the string
-    dates2 = find_date(str2)
+    dates2 = parseCategorizer(str2)
 
 
     return dates1 + dates2
 
 
+def dateSplit(date_str):
+    str_words = date_str.split()
 
+    firstHalf = str_words[:1]
+    secondHalf = str_words[1:]
+    print(firstHalf)
+    print(secondHalf)
+    conjunctions = ["and", "or", "but", "for", "nor", "yet", "so"]
 
+    while True:
+        print(firstHalf)
+        print(secondHalf)
+        try:
+            nextItem = secondHalf.pop(0)
+            if nextItem.lower() in conjunctions:
+                secondHalf.insert(0, nextItem)
+                break
+            firstHalf.append(nextItem)
+            parser.parse(" ".join(firstHalf), fuzzy = True)
+        except parser.ParserError2:
+            secondHalf.insert(0, firstHalf.pop())
+            break
+        except parser.ParserError:      # If it gets an error about the date being invalid, just continue
+            pass
+    
+    return firstHalf, secondHalf
 
 def dateInsightChecking(date_str):
     """
@@ -185,15 +182,14 @@ def dateElementChecking(date_str, date):
 
     # Select date format appropriate based on the given date elements
     if isMonth and isDay:
-        date_format = "%m-%d-%Y"
+        return "%m-%d-%Y"
     elif isDay:
-        date_format = "%m-%d-%Y"
+        return "%m-%d-%Y"
     elif isMonth:
-        date_format = "%m-%Y"
+        return "%m-%Y"
     else:
-        date_format = "%Y"
+        return "%Y"
 
-    return date_format
 
 
 
@@ -235,5 +231,10 @@ print(find_date("The deadline is on 2030"))
 print(find_date("Dear Sir, tomorrow we will have a meeting"))
 print(find_date("Dear Sir, next week we will have a meeting"))
 print(find_date("Our meeting will be held next month"))
-print(find_date("Next year will be the year of giving"))
-print(find_date("Important dates are June 19, May 23, and January 6"))
+
+print(dateSplit("January 1, 2020, Feb 1, 2021"))
+
+print(dateSplit("The deadline is on the 28th of February and 16th of March"))
+print(dateSplit("16th and 17th of January 2020"))
+print(dateSplit("May 2022 and June 2022 and July 2022"))
+print(dateSplit("Not April 17 2020, March 15,2019"))
