@@ -64,7 +64,7 @@ def import_data(datapath:path)->None:
             current_date_file=open("current_date.txt",'r')
             date_lines=current_date_file.readlines()
             for date_line in date_lines:
-                fname,current_str_date=date_line.split(' ')
+                fname,current_str_date=date_line[:-1].split(' ')
                 print(fname,file)
                 if fname==file:
                     if len(current_str_date)==10:
