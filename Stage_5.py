@@ -2,6 +2,56 @@ import datetime
 import dateutil.parser as parser
 import dateutil.relativedelta as rel
 
+weekdays = [("Mon", "Monday"),
+            ("Tue", "Tuesday"),
+            ("Wed", "Wednesday"),
+            ("Thu", "Thursday"),
+            ("Fri", "Friday"),
+            ("Sat", "Saturday"),
+            ("Sun", "Sunday")]
+months= [('Jan', 'January'), 
+        ('Feb', 'February'), 
+        ('Mar', 'March'), 
+        ('Apr', 'April'), 
+        ('May', 'May'), 
+        ('Jun', 'June'), 
+        ('Jul', 'July'), 
+        ('Aug', 'August'), 
+        ('Sep', 'Sept', 'September'), 
+        ('Oct', 'October'), 
+        ('Nov', 'November'), 
+        ('Dec', 'December')]
+days = [('1', '1st'),
+        ('2', '2nd'),
+        ('3', '3rd'),
+        ('4', '4th'),
+        ('5', '5th'),
+        ('6', '6th'),
+        ('7', '7th'),
+        ('8', '8th'),
+        ('9', '9th'),
+        ('10', '10th'),
+        ('11', '11th'),
+        ('12', '12th'),
+        ('13', '13th'),
+        ('14', '14th'),
+        ('15', '15th'),
+        ('16', '16th'),
+        ('17', '17th'),
+        ('18', '18th'),
+        ('19', '19th'),
+        ('20', '20th'),
+        ('21', '21st'),
+        ('22', '22nd'),
+        ('23', '23rd'),
+        ('24', '24th'),
+        ('25', '25th'),
+        ('26', '26th'),
+        ('27', '27th'),
+        ('28', '28th'),
+        ('29', '29th'),
+        ('30', '30th'),
+        ('31', '31st')]
 
 def find_date(image_text:str):
     """
@@ -9,12 +59,9 @@ def find_date(image_text:str):
     """
     date_str = image_text
 
-    # Initialize variables
-    dates = []
-    tokens = ''
     date_format = "%m-%d-%Y" # Initialize default date_format
     date = None # Initialize date variable
-
+    dates = []
 
     try:
         date, date_format = coreParser(date_str)
@@ -33,14 +80,8 @@ def find_date(image_text:str):
         print("Error 2: Multiple dates found, splitting string...")
         mult_dates = dateSplit(date_str)
         dates.extend(mult_dates)
-
-
-
-    # Return the dates.
+    
     return dates
-
-
-
 
 
 def dateSplit(date_str):
@@ -48,24 +89,29 @@ def dateSplit(date_str):
     str_words = date_str.split()
     strlen = len(str_words)
 
-    splitIndx = strlen//2
-    str1 = ' '.join(str_words[:splitIndx])
-    str2 = ' '.join(str_words[splitIndx:])
+    splitIndx = strlen//2 +1
+    firstHalf = str_words[:splitIndx]
+    secondHalf = str_words[splitIndx:]
 
-    try:
-        date1, date_format1 = coreParser(str1)
-        date2, date_format2 = coreParser(str2)
 
-    except parser.ParserError:
-        print("Error: No date format found.")
-        date1 = dateInsightChecking(str1)
+    print(firstHalf)
+    print(secondHalf)
+    
+    str1 = ' '.join(firstHalf)
+    str2 = ' '.join(secondHalf)
 
-    except parser.ParserError2:
-        print("Error: Multiple dates found.")
-        mult_dates = dateSplit(str2)
+    if firstHalf[-1] in months and secondHalf[0] in days:
+        pass
+        # A date might have been cut
+    # Try for first half of the string
+    dates1 = find_date(str1)
 
-    print(date2)
-    return []
+
+    # Try for second half of the string
+    dates2 = find_date(str2)
+
+
+    return dates1 + dates2
 
 
 
@@ -100,57 +146,6 @@ def dateElementChecking(date_str, date):
     # Boolean placeholders for whether a month or a day is found in the string
     isMonth = True
     isDay = True
-
-    weekdays = [("Mon", "Monday"),
-            ("Tue", "Tuesday"),
-            ("Wed", "Wednesday"),
-            ("Thu", "Thursday"),
-            ("Fri", "Friday"),
-            ("Sat", "Saturday"),
-            ("Sun", "Sunday")]
-    months= [('Jan', 'January'), 
-            ('Feb', 'February'), 
-            ('Mar', 'March'), 
-            ('Apr', 'April'), 
-            ('May', 'May'), 
-            ('Jun', 'June'), 
-            ('Jul', 'July'), 
-            ('Aug', 'August'), 
-            ('Sep', 'Sept', 'September'), 
-            ('Oct', 'October'), 
-            ('Nov', 'November'), 
-            ('Dec', 'December')]
-    days = [('1', '1st'),
-            ('2', '2nd'),
-            ('3', '3rd'),
-            ('4', '4th'),
-            ('5', '5th'),
-            ('6', '6th'),
-            ('7', '7th'),
-            ('8', '8th'),
-            ('9', '9th'),
-            ('10', '10th'),
-            ('11', '11th'),
-            ('12', '12th'),
-            ('13', '13th'),
-            ('14', '14th'),
-            ('15', '15th'),
-            ('16', '16th'),
-            ('17', '17th'),
-            ('18', '18th'),
-            ('19', '19th'),
-            ('20', '20th'),
-            ('21', '21st'),
-            ('22', '22nd'),
-            ('23', '23rd'),
-            ('24', '24th'),
-            ('25', '25th'),
-            ('26', '26th'),
-            ('27', '27th'),
-            ('28', '28th'),
-            ('29', '29th'),
-            ('30', '30th'),
-            ('31', '31st')]
 
     # Basis for checking 
     today = datetime.date.today()
@@ -228,5 +223,4 @@ print(find_date("Dear Sir, tomorrow we will have a meeting"))
 print(find_date("Dear Sir, next week we will have a meeting"))
 print(find_date("Our meeting will be held next month"))
 print(find_date("Next year will be the year of giving"))
-print(find_date("Next time"))
-# print(find_date("June 19 2022 2023 May")) 
+print(find_date("Important dates are June 19, May 23, and January 6"))
