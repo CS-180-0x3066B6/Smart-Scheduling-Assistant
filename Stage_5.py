@@ -70,14 +70,12 @@ def find_date(image_text:str):
 
     # If the date is not found by dateutil.parser, statically check for date insights
     except parser.ParserError:
-        print("Error 1: No date format found, checking for date insights...")
         date = dateInsightChecking(date_str)
         if date != None:
             dates.append(date.strftime(date_format))
 
     # If multiple dates are found by dateutil.parser, split the string and parse each string
     except parser.ParserError2:
-        print("Error 2: Multiple dates found, splitting string...")
         mult_dates = dateSplit(date_str)
         dates.extend(mult_dates)
     
@@ -93,6 +91,16 @@ def dateSplit(date_str):
     firstHalf = str_words[:splitIndx]
     secondHalf = str_words[splitIndx:]
 
+    conjunctions = ["and", "or", "but", "for", "nor", "yet", "so"]
+    # If any of the conjunctions are in date_str, split the string on that conjunction
+    for conjunction in conjunctions:
+        if conjunction in date_str:
+            strpair = date_str.split(conjunction,1)
+            firstHalf = strpair[0].split()
+            secondHalf = strpair[1].split()
+
+    
+
 
     isMonth = False
     isDay = False
@@ -102,14 +110,12 @@ def dateSplit(date_str):
         for month in month:
             if firstHalf[-1].replace(',', '') in month:
                 isMonth = True
-                print(firstHalf[-1].replace(',', ''))
                 break
 
     for day in days:
         for day in day:
             if secondHalf[0].replace(',', '') in day:
                 isDay = True
-                print(secondHalf[0].replace(',', ''))
                 break
 
     if isMonth and isDay:
@@ -236,4 +242,4 @@ print(find_date("Dear Sir, tomorrow we will have a meeting"))
 print(find_date("Dear Sir, next week we will have a meeting"))
 print(find_date("Our meeting will be held next month"))
 print(find_date("Next year will be the year of giving"))
-print(find_date("Important dates are June 19, May 23, and January 6"))
+print(find_date("Important dates are June 19, May 23, and January 6, and January 7"))
