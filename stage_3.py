@@ -82,8 +82,9 @@ def bfs_selector(root_node: OCR_Node, img_path: path):
             for date in result:
                 temp_date=str_to_datetime(date)
                 if temp_date>current_date:
-                    newer_detected=True
-                    dates={20:{},40:{},60:{},80:{},100:{},120:{}}
+                    if not newer_detected:
+                        newer_detected=True
+                        dates={20:{},40:{},60:{},80:{},100:{},120:{}}
                     smallest_row=current_node.row_height
                     dates[current_node.row_height][date]=current_node
                 else:
