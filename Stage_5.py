@@ -1,4 +1,6 @@
 import datetime
+
+from matplotlib import image
 import dateutil.parser as parser
 import dateutil.relativedelta as rel
 
@@ -85,58 +87,31 @@ def find_date(image_text: str)->list[str]:
 def dateSplit(date_str):
     # Check for the number of words in date_str
     str_words = date_str.split()
-    strlen = len(str_words)
 
-    splitIndx = strlen//2
-    firstHalf = str_words[:splitIndx]
-    secondHalf = str_words[splitIndx:]
+    firstHalf = str_words[:1]
+    secondHalf = str_words[1:]
 
-
-# Split at conjunctions
-# If any of the conjunctions are in date_str, split the string on that conjunction just once (the next recursive calls will handle the rest)
     conjunctions = ["and", "or", "but", "for", "nor", "yet", "so"]
-    isConjuncted = False
 
-    for conjunction in conjunctions:
-        if conjunction in date_str:
-            strpair = date_str.split(conjunction,1)
-            firstHalf = strpair[0].split()
-            secondHalf = strpair[1].split()
-            isConjuncted = True
+    while True:
+        try:
+            nextItem = secondHalf.pop(0)
+            if nextItem.lower() in conjunctions:
+                secondHalf.insert(0, nextItem)
+                break
+            firstHalf.append(nextItem)
+            parser.parse(" ".join(firstHalf), fuzzy = True)
+        except parser.ParserError2:
+            secondHalf.insert(0, firstHalf.pop())
             break
-
-    
-
-# Error checking
-# Day-Month pair (no commas)
-    isMonth = False
-    isDay = False
-
-    for month in months:
-        for month in month:
-            if firstHalf[-1].replace(',', '') in month:
-                isMonth = True
-                break
-
-    for day in days:
-        for day in day:
-            if secondHalf[0].replace(',', '') in day:
-                isDay = True
-                break
-
-    if isMonth and isDay and not isConjuncted:
-        secondHalf.insert(0, firstHalf.pop())
-        # A date might have been cut
-
-
-
-
-
+        except parser.ParserError:      # If it gets an error about the date being invalid, just continue
+            pass
 
 
     str1 = " ".join(firstHalf)
+    str1 = str1.replace(',', ' ')
     str2 = " ".join(secondHalf)
-
+    str2 = str2.replace(',', ' ')
 
     # Try for first half of the string
     dates1 = find_date(str1)
@@ -204,15 +179,14 @@ def dateElementChecking(date_str, date):
 
     # Select date format appropriate based on the given date elements
     if isMonth and isDay:
-        date_format = "%m-%d-%Y"
+        return "%m-%d-%Y"
     elif isDay:
-        date_format = "%m-%d-%Y"
+        return "%m-%d-%Y"
     elif isMonth:
-        date_format = "%m-%Y"
+        return "%m-%Y"
     else:
-        date_format = "%Y"
+        return "%Y"
 
-    return date_format
 
 
 
@@ -254,7 +228,10 @@ print(find_date("The deadline is on 2030"))
 print(find_date("Dear Sir, tomorrow we will have a meeting"))
 print(find_date("Dear Sir, next week we will have a meeting"))
 print(find_date("Our meeting will be held next month"))
-print(find_date("January 1, 2020, Feb 1, 2021"))
-print(find_date("Not April 17 2020, March 15,2019"))
-print(find_date("The deadline is on the 28th of February and 16th of March"))
-print(find_date("16th of January and 17th of January 2020"))
+
+print(dateSplit("January 1, 2020, Feb 1, 2021"))
+
+print(dateSplit("The deadline is on the 28th of February and 16th of March"))
+print(dateSplit("16th and 17th of January 2020"))
+print(dateSplit("May 2022 and June 2022 and July 2022"))
+print(dateSplit("Not April 17 2020, March 15,2019"))
