@@ -55,7 +55,15 @@ def image_divider(imgdta,add)->None:
     #testing if image is being passed
     pass
     #end of testing
-
+def str_to_datetime(date_string):
+    if len(date_string)==10:
+        m,d,y=date_string.split('-')
+        return datetime.datetime(int(y),int(m),int(d))
+    elif len(date_string)==7:
+        m,y=date_string.split('-')
+        return datetime.datetime(int(y),int(m),1)
+    elif len(date_string)==4:
+        return datetime.datetime(int(date_string),1,1)
 #start of stage 1
 def import_data(datapath:path)->None:
     global current_date
@@ -67,14 +75,7 @@ def import_data(datapath:path)->None:
                 fname,current_str_date=date_line[:-1].split(' ')
                 print(fname,file)
                 if fname==file:
-                    if len(current_str_date)==10:
-                        m,d,y=current_str_date.split('-')
-                        current_date=datetime.datetime(int(y),int(m),int(d))
-                    elif len(current_str_date)==7:
-                        m,y=current_str_date.split('-')
-                        current_date=datetime.datetime(int(y),int(m),1)
-                    elif len(current_str_date)==4:
-                        current_date=datetime.datetime(int(current_str_date),1,1)
+                    current_date=str_to_datetime(current_str_date)
             full_directory=datapath+file
             print(current_date)
             img=Image.open(full_directory)

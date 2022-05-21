@@ -5,7 +5,7 @@ from typing import Optional
 import numpy
 path=str
 imagedata=numpy.ndarray
-
+import datetime
 class OCR_Node:
     def __init__(self,row_height:int = -1, row_number:int = -1):
         self.row_height = row_height 
@@ -46,7 +46,15 @@ def subdivide(size: int, some_image: imagedata)->OCR_Node:
             all_nodes[x].children.append(all_nodes[rson_index])
     return top_node
 
-
+def str_to_datetime(date_string):
+    if len(date_string)==10:
+        m,d,y=date_string.split('-')
+        return datetime.datetime(int(y),int(m),int(d))
+    elif len(date_string)==7:
+        m,y=date_string.split('-')
+        return datetime.datetime(int(y),int(m),1)
+    elif len(date_string)==4:
+        return datetime.datetime(int(date_string),1,1)
 #dummy stage 4
 def ocr(some_subimage: imagedata)-> list[str]:
     found_date=None
