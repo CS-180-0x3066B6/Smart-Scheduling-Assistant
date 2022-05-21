@@ -89,32 +89,45 @@ def dateSplit(date_str):
     str_words = date_str.split()
     strlen = len(str_words)
 
-    splitIndx = strlen//2 +1
+    splitIndx = strlen//2
     firstHalf = str_words[:splitIndx]
     secondHalf = str_words[splitIndx:]
 
 
-    print(firstHalf)
-    print(secondHalf)
-    
-    str1 = ' '.join(firstHalf)
-    str2 = ' '.join(secondHalf)
+    isMonth = False
+    isDay = False
+    # Error checking
+        # Day-Month pair (no commas)
+    for month in months:
+        for month in month:
+            if firstHalf[-1].replace(',', '') in month:
+                isMonth = True
+                print(firstHalf[-1].replace(',', ''))
+                break
 
-    if firstHalf[-1] in months and secondHalf[0] in days:
-        pass
+    for day in days:
+        for day in day:
+            if secondHalf[0].replace(',', '') in day:
+                isDay = True
+                print(secondHalf[0].replace(',', ''))
+                break
+
+    if isMonth and isDay:
+        secondHalf.insert(0, firstHalf.pop())
         # A date might have been cut
+
+
+    str1 = " ".join(firstHalf)
+    str2 = " ".join(secondHalf)
+
+
     # Try for first half of the string
     dates1 = find_date(str1)
-
-
     # Try for second half of the string
     dates2 = find_date(str2)
 
 
     return dates1 + dates2
-
-
-
 
 
 
