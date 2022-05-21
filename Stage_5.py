@@ -53,7 +53,7 @@ days = [('1', '1st'),
         ('30', '30th'),
         ('31', '31st')]
 
-def find_date(image_text:str):
+def find_date(image_text: str)->list[str]:
     """
     Finds the date of the image.
     """
@@ -91,22 +91,27 @@ def dateSplit(date_str):
     firstHalf = str_words[:splitIndx]
     secondHalf = str_words[splitIndx:]
 
+
+# Split at conjunctions
+# If any of the conjunctions are in date_str, split the string on that conjunction just once (the next recursive calls will handle the rest)
     conjunctions = ["and", "or", "but", "for", "nor", "yet", "so"]
-    # If any of the conjunctions are in date_str, split the string on that conjunction
+    isConjuncted = False
+
     for conjunction in conjunctions:
         if conjunction in date_str:
             strpair = date_str.split(conjunction,1)
             firstHalf = strpair[0].split()
             secondHalf = strpair[1].split()
+            isConjuncted = True
             break
 
     
 
-
+# Error checking
+# Day-Month pair (no commas)
     isMonth = False
     isDay = False
-    # Error checking
-        # Day-Month pair (no commas)
+
     for month in months:
         for month in month:
             if firstHalf[-1].replace(',', '') in month:
@@ -119,9 +124,14 @@ def dateSplit(date_str):
                 isDay = True
                 break
 
-    if isMonth and isDay:
+    if isMonth and isDay and not isConjuncted:
         secondHalf.insert(0, firstHalf.pop())
         # A date might have been cut
+
+
+
+
+
 
 
     str1 = " ".join(firstHalf)
@@ -132,6 +142,8 @@ def dateSplit(date_str):
     dates1 = find_date(str1)
     # Try for second half of the string
     dates2 = find_date(str2)
+
+
 
 
     return dates1 + dates2
@@ -242,5 +254,7 @@ print(find_date("The deadline is on 2030"))
 print(find_date("Dear Sir, tomorrow we will have a meeting"))
 print(find_date("Dear Sir, next week we will have a meeting"))
 print(find_date("Our meeting will be held next month"))
-print(find_date("Next year will be the year of giving"))
-print(find_date("Important dates are June 19, May 23, and January 6, and January 7"))
+print(find_date("January 1, 2020, Feb 1, 2021"))
+print(find_date("Not April 17 2020, March 15,2019"))
+print(find_date("The deadline is on the 28th of February and 16th of March"))
+print(find_date("16th of January and 17th of January 2020"))
