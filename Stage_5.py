@@ -108,13 +108,9 @@ def dateSplit(date_str):
 
     firstHalf = str_words[:1]
     secondHalf = str_words[1:]
-    print(firstHalf)
-    print(secondHalf)
     conjunctions = ["and", "or", "but", "for", "nor", "yet", "so"]
 
     while True:
-        print(firstHalf)
-        print(secondHalf)
         try:
             nextItem = secondHalf.pop(0)
             if nextItem.lower() in conjunctions:
@@ -127,6 +123,8 @@ def dateSplit(date_str):
             break
         except parser.ParserError:      # If it gets an error about the date being invalid, just continue
             pass
+        except IndexError:
+            break
     
     return firstHalf, secondHalf
 
@@ -232,9 +230,9 @@ print(find_date("Dear Sir, tomorrow we will have a meeting"))
 print(find_date("Dear Sir, next week we will have a meeting"))
 print(find_date("Our meeting will be held next month"))
 
-print(dateSplit("January 1, 2020, Feb 1, 2021"))
+print(find_date("January 1, 2020, Feb 1, 2021"))
 
-print(dateSplit("The deadline is on the 28th of February and 16th of March"))
-print(dateSplit("16th and 17th of January 2020"))
-print(dateSplit("May 2022 and June 2022 and July 2022"))
-print(dateSplit("Not April 17 2020, March 15,2019"))
+print(find_date("The deadline is on the 28th of February and 16th of March"))
+print(find_date("16th and 17th of January 2020"))
+print(find_date("May 2022 and June 2022 and July 2022"))
+print(find_date("Not April 17 2020, March 15,2019"))
