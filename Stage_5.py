@@ -98,6 +98,7 @@ def dateSplit(date_str):
             strpair = date_str.split(conjunction,1)
             firstHalf = strpair[0].split()
             secondHalf = strpair[1].split()
+            break
 
     
 
