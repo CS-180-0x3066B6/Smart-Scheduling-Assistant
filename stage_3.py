@@ -1,3 +1,4 @@
+from cgitb import small
 import os
 from PIL import Image
 from IPython import display
@@ -6,6 +7,7 @@ import numpy
 path=str
 imagedata=numpy.ndarray
 import datetime
+current_date=None
 class OCR_Node:
     def __init__(self,row_height:int = -1, row_number:int = -1):
         self.row_height = row_height 
@@ -65,6 +67,7 @@ def output_summary(parsed_dates:dict[str,OCR_Node], img_path:path, root_node: OC
     pass
 #start of stage 3
 def bfs_selector(root_node: OCR_Node, img_path: path):
+    newer_detected=False
     queue:list[OCR_Node]=[]
     dates:dict[int,dict[str,OCR_Node]]={20:{},40:{},60:{},80:{},100:{},120:{}}
     smallest_row=121
@@ -77,7 +80,15 @@ def bfs_selector(root_node: OCR_Node, img_path: path):
             if not current_node.is_dummy:  
                 result=ocr(current_node.subimage)
             for date in result:
-                dates[current_node.row_height][date]=current_node
+                temp_date=str_to_datetime(date)
+                if temp_date>current_date:
+                    newer_detected=True
+                    dates={20:{},40:{},60:{},80:{},100:{},120:{}}
+                    smallest_row=current_node.row_height
+                    dates[current_node.row_height][date]=current_node
+                else:
+                    if not newer_detected:
+                        dates[current_node.row_height][date]=current_node #past nodes
             for child in current_node: #append all child to queue
                 queue.append(child)
     smallest_dates=None
