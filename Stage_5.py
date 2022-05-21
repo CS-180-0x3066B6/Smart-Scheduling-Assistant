@@ -55,7 +55,9 @@ days = [('1', '1st'),
         ('30', '30th'),
         ('31', '31st')]
 
+
 def parseCategorizer(image_text: str)->list[str]:
+
     """
     Finds the date of the image.
     """
@@ -78,7 +80,9 @@ def parseCategorizer(image_text: str)->list[str]:
 
     # If multiple dates are found by dateutil.parser, split the string and parse each string
     except parser.ParserError2:
+
         mult_dates = find_date(date_str)
+
         dates.extend(mult_dates)
     
     return dates
@@ -86,8 +90,32 @@ def parseCategorizer(image_text: str)->list[str]:
 
 def find_date(date_str):
     # Check for the number of words in date_str
+
     
     firstHalf, secondHalf = dateSplit(date_str)
+
+    str_words = date_str.split()
+
+    firstHalf = str_words[:1]
+    secondHalf = str_words[1:]
+
+    conjunctions = ["and", "or", "but", "for", "nor", "yet", "so"]
+
+    while True:
+        try:
+            nextItem = secondHalf.pop(0)
+            if nextItem.lower() in conjunctions:
+                secondHalf.insert(0, nextItem)
+                break
+            firstHalf.append(nextItem)
+            parser.parse(" ".join(firstHalf), fuzzy = True)
+        except parser.ParserError2:
+            secondHalf.insert(0, firstHalf.pop())
+            break
+        except parser.ParserError:      # If it gets an error about the date being invalid, just continue
+            pass
+
+
 
     str1 = " ".join(firstHalf)
     str1 = str1.replace(',', ' ')
@@ -98,6 +126,8 @@ def find_date(date_str):
     dates1 = parseCategorizer(str1)
     # Try for second half of the string
     dates2 = parseCategorizer(str2)
+
+
 
 
     return dates1 + dates2
@@ -230,9 +260,18 @@ print(find_date("Dear Sir, tomorrow we will have a meeting"))
 print(find_date("Dear Sir, next week we will have a meeting"))
 print(find_date("Our meeting will be held next month"))
 
+
 print(find_date("January 1, 2020, Feb 1, 2021"))
 
 print(find_date("The deadline is on the 28th of February and 16th of March"))
 print(find_date("16th and 17th of January 2020"))
 print(find_date("May 2022 and June 2022 and July 2022"))
 print(find_date("Not April 17 2020, March 15,2019"))
+
+print(dateSplit("January 1, 2020, Feb 1, 2021"))
+
+print(dateSplit("The deadline is on the 28th of February and 16th of March"))
+print(dateSplit("16th and 17th of January 2020"))
+print(dateSplit("May 2022 and June 2022 and July 2022"))
+print(dateSplit("Not April 17 2020, March 15,2019"))
+
