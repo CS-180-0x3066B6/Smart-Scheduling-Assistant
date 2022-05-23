@@ -47,7 +47,7 @@ def buttonFunction2(pic2):
     butt2.mainloop()
 
 datelist =[]
-with open('json.txt') as f:
+with open("data.json") as f:
     for jsonObj in f:
         datedict = json.loads(jsonObj)
         if(len(datedict["Date"]) == 10):
