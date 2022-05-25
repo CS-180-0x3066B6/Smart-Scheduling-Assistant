@@ -38,17 +38,17 @@ def output_summary(parsed_dates:dict, img_path:str):
         r_number = str(value.row_number)
         subimg = value.subimage
 
-        path = ["smart_assistant", "image_segments"]
-        path.append(origfilename)
-        path.append(r_height)
+        pathlist = ["smart_assistant", "image_segments"]
+        pathlist.append(origfilename)
+        pathlist.append(r_height)
 
         owd = os.getcwd()
         for i in range(4):
-            if(os.path.exists(path[i]) == True ):
-                os.chdir(path[i])
+            if(os.path.exists(pathlist[i]) == True ):
+                os.chdir(pathlist[i])
         else:
-            os.mkdir(path[i])
-            os.chdir(path[i])
+            os.mkdir(pathlist[i])
+            os.chdir(pathlist[i])
         cv2.imwrite(r_number+".png", subimg)    
         os.chdir(owd)       
         
