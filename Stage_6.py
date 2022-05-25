@@ -14,7 +14,7 @@ class OCR_Node:
 
 
 # Data to be written
-def output_summary(parsed_dates:dict, img_path:str, root_node:Optional[OCR_Node]=None):
+def output_summary(parsed_dates:dict, img_path:str):
     # Know the current Date
     currentDate = current_date
 
@@ -29,10 +29,29 @@ def output_summary(parsed_dates:dict, img_path:str, root_node:Optional[OCR_Node]
         # Create a dictionary of the parsed_dates
         json_dict = {}
         json_dict['date'] = date
-        json_dict['type'] = value
         json_dict['path'] = img_path
         json_dict['subimage_path'] = img_path 
 
+        splits = img_path.split("/")
+        origfilename = splits[-1][:-4]
+        r_height = str(value.row_height)
+        r_number = str(value.row_number)
+        subimg = value.subimage
+
+        path = ["smart_assistant", "image_segments"]
+        path.append(origfilename)
+        path.append(r_height)
+
+        owd = os.getcwd()
+        for i in range(4):
+            if(os.path.exists(path[i]) == True ):
+                os.chdir(path[i])
+        else:
+            os.mkdir(path[i])
+            os.chdir(path[i])
+        cv2.imwrite(r_number+".png", subimg)    
+        os.chdir(owd)       
+        
         # Add the dictionary to the list if date is not in the past
         if datetime.datetime.strptime(date, "%m %d %Y") > currentDate:
             json_list.append(json_dict)
