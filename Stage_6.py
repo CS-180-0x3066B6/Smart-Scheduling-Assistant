@@ -2,7 +2,7 @@ import json
 import os
 import datetime
 from typing import Optional
-
+import cv2
 
 # Placeholder OCR_Node class and current_date
 current_date = datetime.datetime.now()
@@ -43,7 +43,7 @@ def output_summary(parsed_dates:dict, img_path:str):
         pathlist.append(r_height)
 
         owd = os.getcwd()
-        for i in range(4):
+        for i in range(len(pathlist)):
             if(os.path.exists(pathlist[i]) == True ):
                 os.chdir(pathlist[i])
         else:
