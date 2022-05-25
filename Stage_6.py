@@ -25,7 +25,7 @@ def output_summary(parsed_dates:dict, img_path:str):
 
     # Iterate through the parsed_dates dictionary
     for date,value in parsed_dates.items():
-        
+        print(date,value)
         # Create a dictionary of the parsed_dates
         json_dict = {}
         json_dict['date'] = date

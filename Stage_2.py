@@ -13,10 +13,7 @@ class OCR_Node:
         self.is_dummy = True 
 
 def subdivide(size: int, some_image: imagedata)->OCR_Node:
-    if some_image!=None:
-        image_height = len(some_image)
-    else:
-        image_height=0
+    image_height = len(some_image)
     total_subimages = int(image_height/size)
     if image_height % size > 0:
         total_subimages += 1

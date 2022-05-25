@@ -20,46 +20,6 @@ class OCR_Node:
         self.subimage: Optional[imagedata] = None
         self.is_dummy = True 
 
-def subdivide(size: int, some_image: imagedata)->OCR_Node:
-    print(type(some_image))
-    if some_image!=None:
-        image_height = len(some_image)
-    else:
-        image_height=0
-    total_subimages = int(image_height/size)
-    if image_height % size > 0:
-        total_subimages += 1
-    top_node = OCR_Node(row_height=size)
-    all_nodes: list[OCR_Node] = list()
-    max_node_index = len(all_nodes) - 1
-    #Decompose some_image into indexed OCR_Nodes
-    for x in range(total_subimages):
-        new_node = OCR_Node(row_height = size,row_number = x)
-        row_end = x*(size+1)
-        if row_end >image_height -1:
-            row_end = image_height -1
-        new_node.subimage = some_image[:][x*size:row_end]
-        new_node.is_dummy = False
-        all_nodes.append(new_node)
-    #Put nodes into a complete binary tree, rooted at top_node; Do this by copying references into each OCR_Node's children attribute
-    #Note: row_number+1 is each node's
-    if total_subimages > 1:
-        top_node.children = [all_nodes[0],all_nodes[1]]
-    else:
-        top_node.children = [all_nodes[0]]
-    for x in range(len(all_nodes)):
-        lson_index  = (x+1)*2
-        rson_index  = (x+1)*2+1
-        if lson_index <= max_node_index:
-            all_nodes[x].children.append(all_nodes[lson_index])
-        if rson_index <= max_node_index:
-            all_nodes[x].children.append(all_nodes[rson_index])
-    return top_node
-
-
-
-
-
     #end of testing
 def str_to_datetime(date_string):
     if len(date_string)==10:
@@ -73,7 +33,10 @@ def str_to_datetime(date_string):
 #start of stage 1
 def import_data(datapath:path)->None:
     global current_date
+    count=0
     for file in os.listdir(datapath):
+        if count==10:
+            break
         if file.endswith(".tif"):
             current_date_file=open("current_date.txt",'r')
             date_lines=current_date_file.readlines()
@@ -83,8 +46,8 @@ def import_data(datapath:path)->None:
                 if fname==file:
                     current_date=str_to_datetime(current_str_date)
             full_directory=datapath+file
-            print(current_date)
             imgdata=cv2.imread(full_directory)
             image_divider(imgdata,full_directory)
+        count+=1
 
-import_data("Learning") #path
+import_data("Learning/") #path

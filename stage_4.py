@@ -5,10 +5,9 @@ pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesse
 imagedata = np.ndarray
 
 def ocr(some_subimage : imagedata):
-    print(type(some_subimage))
     text = pytesseract.image_to_string(some_subimage)
-    print(text)
     found_dates = find_date(text)
+    print(found_dates)
     return found_dates
   
 def ocr_test():  
