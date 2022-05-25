@@ -1,5 +1,6 @@
 #imports
 import os
+from turtle import clear
 from PIL import Image
 from IPython import display
 from typing import Optional
@@ -20,7 +21,11 @@ class OCR_Node:
         self.is_dummy = True 
 
 def subdivide(size: int, some_image: imagedata)->OCR_Node:
-    image_height = len(some_image)
+    print(type(some_image))
+    if some_image!=None:
+        image_height = len(some_image)
+    else:
+        image_height=0
     total_subimages = int(image_height/size)
     if image_height % size > 0:
         total_subimages += 1
@@ -43,13 +48,14 @@ def subdivide(size: int, some_image: imagedata)->OCR_Node:
     else:
         top_node.children = [all_nodes[0]]
     for x in range(len(all_nodes)):
-        lson_index  = (x+1)*2+1
-        rson_index  = (x+1)*2+2
+        lson_index  = (x+1)*2
+        rson_index  = (x+1)*2+1
         if lson_index <= max_node_index:
             all_nodes[x].children.append(all_nodes[lson_index])
         if rson_index <= max_node_index:
             all_nodes[x].children.append(all_nodes[rson_index])
     return top_node
+
 
 
 
@@ -81,4 +87,4 @@ def import_data(datapath:path)->None:
             imgdata=cv2.imread(full_directory)
             image_divider(imgdata,full_directory)
 
-import_data("Learning/") #path
+import_data("Learning") #path
