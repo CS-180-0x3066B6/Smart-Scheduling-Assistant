@@ -6,11 +6,20 @@ from typing import Optional
 import numpy
 path=str
 imagedata=numpy.ndarray
-from stage_1 import str_to_datetime
 from stage_4 import ocr
 from Stage_6 import output_summary
 import datetime
 current_date=None
+
+def str_to_datetime(date_string):
+    if len(date_string)==10:
+        m,d,y=date_string.split('-')
+        return datetime.datetime(int(y),int(m),int(d))
+    elif len(date_string)==7:
+        m,y=date_string.split('-')
+        return datetime.datetime(int(y),int(m),1)
+    elif len(date_string)==4:
+        return datetime.datetime(int(date_string),1,1)
 class OCR_Node:
     def __init__(self,row_height:int = -1, row_number:int = -1):
         self.row_height = row_height 

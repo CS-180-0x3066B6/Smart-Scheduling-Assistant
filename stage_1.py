@@ -1,17 +1,18 @@
 #imports
 import os
+from Stage_2 import image_divider
 from turtle import clear
 from PIL import Image
 from IPython import display
 from typing import Optional
 import numpy
 import datetime
-from Stage_2 import OCR_Node, image_divider
 import cv2
 
 path=str
 imagedata=numpy.ndarray
 current_date=None
+
 class OCR_Node:
     def __init__(self,row_height:int = -1, row_number:int = -1):
         self.row_height = row_height 

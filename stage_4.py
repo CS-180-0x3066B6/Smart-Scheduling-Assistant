@@ -17,4 +17,4 @@ def ocr_test():
     img1 = np.array(Image.open(filename))
     print(ocr(img1)) 
 
-ocr_test()
+
