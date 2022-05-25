@@ -1,5 +1,7 @@
 from typing import Optional
 import numpy
+from stage_3 import bfs_selector
+
 imagedata = numpy.ndarray
 path = str
 class OCR_Node:
@@ -42,8 +44,8 @@ def subdivide(size: int, some_image: imagedata)->OCR_Node:
             all_nodes[x].children.append(all_nodes[rson_index])
     return top_node
 
-def bfs_selector(root_node: OCR_Node,img_path:path)->None:
-    pass
+# def bfs_selector(root_node: OCR_Node,img_path:path)->None:
+#     pass
 
 def image_divider(some_image: imagedata, img_path: path) -> None:
     step_sizes = [20,40,60,80,100,120]

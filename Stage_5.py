@@ -55,7 +55,7 @@ days = [('1', '1st'),
         ('30', '30th'),
         ('31', '31st')]
 
-def parseCategorizer(image_text: str)->list[str]:
+def parseCategorizer(image_text):
     """
     Finds the date of the image.
     """
@@ -98,7 +98,6 @@ def find_date(date_str):
     dates1 = parseCategorizer(str1)
     # Try for second half of the string
     dates2 = parseCategorizer(str2)
-
 
     return dates1 + dates2
 
@@ -222,17 +221,17 @@ def coreParser(date_str):
 
 
 # Tests
-print(find_date("Your bill is due on the 28th of February"))
-print(find_date("Your bill is due on the 28th of May"))
-print(find_date("The concert will be on Thursday"))
-print(find_date("The deadline is on 2030"))
-print(find_date("Dear Sir, tomorrow we will have a meeting"))
-print(find_date("Dear Sir, next week we will have a meeting"))
-print(find_date("Our meeting will be held next month"))
+# print(find_date("Your bill is due on the 28th of February"))
+# print(find_date("Your bill is due on the 28th of May"))
+# print(find_date("The concert will be on Thursday"))
+# print(find_date("The deadline is on 2030"))
+# print(find_date("Dear Sir, tomorrow we will have a meeting"))
+# print(find_date("Dear Sir, next week we will have a meeting"))
+# print(find_date("Our meeting will be held next month"))
 
-print(find_date("January 1, 2020, Feb 1, 2021"))
+# print(find_date("January 1, 2020, Feb 1, 2021"))
 
-print(find_date("The deadline is on the 28th of February and 16th of March"))
-print(find_date("16th and 17th of January 2020"))
-print(find_date("May 2022 and June 2022 and July 2022"))
-print(find_date("Not April 17 2020, March 15,2019"))
+# print(find_date("The deadline is on the 28th of February and 16th of March"))
+# print(find_date("16th and 17th of January 2020"))
+# print(find_date("May 2022 and June 2022 and July 2022"))
+# print(find_date("Not April 17 2020, March 15,2019"))

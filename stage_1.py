@@ -5,6 +5,9 @@ from IPython import display
 from typing import Optional
 import numpy
 import datetime
+from Stage_2 import OCR_Node, image_divider
+
+
 path=str
 imagedata=numpy.ndarray
 current_date=None
@@ -49,11 +52,8 @@ def subdivide(size: int, some_image: imagedata)->OCR_Node:
     return top_node
 
 
-#dummy stage 2
-def image_divider(imgdta,add)->None:
-    # image division here
-    #testing if image is being passed
-    pass
+
+
     #end of testing
 def str_to_datetime(date_string):
     if len(date_string)==10:
@@ -73,7 +73,7 @@ def import_data(datapath:path)->None:
             date_lines=current_date_file.readlines()
             for date_line in date_lines:
                 fname,current_str_date=date_line[:-1].split(' ')
-                print(fname,file)
+                # print(fname,file)
                 if fname==file:
                     current_date=str_to_datetime(current_str_date)
             full_directory=datapath+file
@@ -81,4 +81,5 @@ def import_data(datapath:path)->None:
             img=Image.open(full_directory)
             imgdata=numpy.array(img)
             image_divider(imgdata,full_directory)
+
 import_data("Learning/") #path
