@@ -6,7 +6,7 @@ from typing import Optional
 import numpy
 import datetime
 from Stage_2 import OCR_Node, image_divider
-
+import cv2
 
 path=str
 imagedata=numpy.ndarray
@@ -78,8 +78,7 @@ def import_data(datapath:path)->None:
                     current_date=str_to_datetime(current_str_date)
             full_directory=datapath+file
             print(current_date)
-            img=Image.open(full_directory)
-            imgdata=numpy.array(img)
+            imgdata=cv2.imread(full_directory)
             image_divider(imgdata,full_directory)
 
 import_data("Learning/") #path
