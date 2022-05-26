@@ -1,9 +1,10 @@
 import datetime
 
-from matplotlib import image
 import dateutil.parser as parser
 import dateutil.relativedelta as rel
 
+
+global_date = 0
 weekdays = [("Mon", "Monday"),
             ("Tue", "Tuesday"),
             ("Wed", "Wednesday"),
@@ -55,6 +56,7 @@ days = [('1', '1st'),
         ('30', '30th'),
         ('31', '31st')]
 
+
 def parseCategorizer(image_text):
     """
     Finds the date of the image.
@@ -68,23 +70,29 @@ def parseCategorizer(image_text):
     try:
         date, date_format = coreParser(date_str)
         if date != None:
-            dates.append(date.strftime(date_format))
+            if date > global_date:
+                dates.append(date.strftime(date_format))
 
     # If the date is not found by dateutil.parser, statically check for date insights
     except parser.ParserError:
         date = dateInsightChecking(date_str)
         if date != None:
-            dates.append(date.strftime(date_format))
+            if date > global_date:
+                dates.append(date.strftime(date_format))
 
     # If multiple dates are found by dateutil.parser, split the string and parse each string
     except parser.ParserError2:
-        mult_dates = find_date(date_str)
+        mult_dates = find_date(date_str, global_date)
         dates.extend(mult_dates)
     
     return dates
 
 
-def find_date(date_str):
+def find_date(date_str, current_date):
+    print(current_date)
+    print(global_date)
+    global_date = current_date
+    print(global_date)
     # Check for the number of words in date_str
     
     firstHalf, secondHalf = dateSplit(date_str)
@@ -234,4 +242,4 @@ def coreParser(date_str):
 # print(find_date("The deadline is on the 28th of February and 16th of March"))
 # print(find_date("16th and 17th of January 2020"))
 # print(find_date("May 2022 and June 2022 and July 2022"))
-# print(find_date("Not April 17 2020, March 15,2019"))
+print(find_date("Not April 17 2020, March 15,2019", datetime.datetime.now()))
