@@ -30,7 +30,7 @@ def days(month):
  
 def buttonFunction1(pic1):
     butt1 = Toplevel(root)
-    butt1.title("View Subimage")
+    butt1.title("Subimage")
     butt1.geometry("500x500")
     img = ImageTk.PhotoImage(Image.open(pic1))
     picture = Label(butt1, image=img)
@@ -39,7 +39,7 @@ def buttonFunction1(pic1):
     
 def buttonFunction2(pic2):
     butt2 = Toplevel(root)
-    butt2.title("View Image")
+    butt2.title("Image")
     butt2.geometry("500x500")
     img = ImageTk.PhotoImage(Image.open(pic2))
     picture = Label(butt2, image=img)
@@ -47,25 +47,26 @@ def buttonFunction2(pic2):
     butt2.mainloop()
 
 datelist =[]
-with open("data.json") as f:
-    for jsonObj in f:
-        datedict = json.loads(jsonObj)
-        if(len(datedict["Date"]) == 10):
-            date2 = datedict["Date"][-4:] + "-" + datedict["Date"][:3] + datedict["Date"][3:5]   
-        elif(len(datedict["Date"]) == 7):
-            date2 =  datedict["Date"][-4:] + "-" + datedict["Date"][:3] + days(datedict["Date"][0:2]) 
+with open("data.json","r") as f:
+    f2 = json.load(f)
+    for jsonObj in f2:
+        datedict = jsonObj
+        if(len(datedict["date"]) == 10):
+            date2 = datedict["date"][-4:] + "-" + datedict["date"][:3] + datedict["date"][3:5]   
+        elif(len(datedict["date"]) == 7):
+            date2 =  datedict["date"][-4:] + "-" + datedict["date"][:3] + days(datedict["date"][0:2]) 
         else:
-            date2 =  datedict["Date"] + "12-31-" 
-        datedict.update({"Datesort": date2})
+            date2 =  datedict["date"] + "12-31-" 
+        datedict.update({"datesort": date2})
         datelist.append(datedict)
 
-newdatelist = sorted(datelist, key=itemgetter("Datesort"))
+newdatelist = sorted(datelist, key=itemgetter("datesort"))
 
 for i in range(len(newdatelist)):
-    date = Label(second_frame, height = 1, width = 12, text = newdatelist[i]["Date"]) 
+    date = Label(second_frame, height = 1, width = 12, text = newdatelist[i]["date"]) 
     date.grid(row = i, column = 0)
-    b1 = Button(second_frame, height = 1, width = 12, text = "View Subimage", command = lambda i=i: buttonFunction1(newdatelist[i]["Subimage_Path"]))
+    b1 = Button(second_frame, height = 1, width = 12, text = "Subimage", command = lambda i=i: buttonFunction1(newdatelist[i]["subimage_path"]))
     b1.grid(row = i, column = 1)
-    b2 = Button(second_frame, height = 1, width = 12, text = "View Image", command = lambda i=i: buttonFunction2(newdatelist[i]["Image_Path"]))
+    b2 = Button(second_frame, height = 1, width = 12, text = "Image", command = lambda i=i: buttonFunction2(newdatelist[i]["path"]))
     b2.grid(row = i, column =2)
 root.mainloop()
