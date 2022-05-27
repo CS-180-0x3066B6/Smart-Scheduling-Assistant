@@ -67,14 +67,14 @@ def parseCategorizer(image_text, current_date):
     dates = []
 
     try:
-        date, date_format = coreParser(date_str)
+        date, date_format = coreParser(date_str, current_date)
         if date != None:
             if date >= current_date:
                 dates.append(date.strftime(date_format))
 
     # If the date is not found by dateutil.parser, statically check for date insights
     except parser.ParserError:
-        date = dateInsightChecking(date_str)
+        date = dateInsightChecking(date_str, current_date)
         if date != None:
             if date >= current_date:
                 dates.append(date.strftime(date_format))
@@ -110,7 +110,10 @@ def find_date(date_str, current_date):
 
 
 def dateSplit(date_str):
-    str_words = date_str.split()
+    if ("\n" in date_str):
+        str_words = date_str.splitlines()
+    else:
+        str_words = date_str.split()
 
     firstHalf = str_words[:1]
     secondHalf = str_words[1:]
@@ -134,7 +137,7 @@ def dateSplit(date_str):
     
     return firstHalf, secondHalf
 
-def dateInsightChecking(date_str):
+def dateInsightChecking(date_str, current_date):
     """
     Static Inference Section
     - Check for date insights like:
@@ -150,7 +153,7 @@ def dateInsightChecking(date_str):
     # If date_ins is in the unused_string, add the date_ins to the date.
     for insight, offset in date_ins.items():
         if insight in date_str.lower():
-            return datetime.date.today() + offset
+            return current_date+ offset
     return None
 
 
@@ -198,14 +201,14 @@ def dateElementChecking(date_str, date):
 
 
 
-def coreParser(date_str):
+def coreParser(date_str, current_date):
     """
     Date parsing using dateutil.parser
     - Check for dates in the string (only works when one date in string)
     - Return date_format depending on the only existing date elements in the string (If only "January 2020" is passed, return "%m %Y")
     """
     # Parse the date from the date_str
-    date, tokens = parser.parse(date_str, fuzzy_with_tokens = True)
+    date, tokens = parser.parse(default = current_date, timestr = date_str, fuzzy_with_tokens = True)
 
 
 
