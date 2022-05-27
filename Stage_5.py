@@ -114,7 +114,7 @@ def dateSplit(date_str):
 
     firstHalf = str_words[:1]
     secondHalf = str_words[1:]
-    conjunctions = ["and", "or", "but", "for", "nor", "yet", "so"]
+    conjunctions = ["and", "or", "but", "for", "nor", "yet", "so", "\n"]
 
     while True:
         try:

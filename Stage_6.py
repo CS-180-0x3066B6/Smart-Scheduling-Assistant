@@ -14,8 +14,9 @@ class OCR_Node:
 
 
 # Data to be written
-def output_summary(parsed_dates:dict, img_path:str):
-
+def output_summary(parsed_dates:dict, img_path:str, text):
+    print("STAGE 6")
+    print(text)
 
 
     # Create a list of items to convert to JSON
@@ -29,7 +30,7 @@ def output_summary(parsed_dates:dict, img_path:str):
             json_dict = {}
             json_dict['date'] = date
             json_dict['path'] = img_path
-        
+            json_dict['text'] = text[date]
         
             splits = img_path.split("/")
             origfilename = splits[-1][:-4]

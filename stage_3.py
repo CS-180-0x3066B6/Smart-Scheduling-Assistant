@@ -33,6 +33,7 @@ def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datet
     newer_detected=False
     queue:list[OCR_Node]=[]
     dates:dict[int,dict[str,list[OCR_Node]]]={}
+    texts : dict[int,dict[str,list[OCR_Node]]]={}
     smallest_row=121
     for child in root_node.children:#appending initial children 
         queue.append(child)
@@ -41,35 +42,44 @@ def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datet
         if current_node.row_height<=smallest_row:
             result=[]
             if not current_node.is_dummy:  
-                result:list[str]=ocr(current_node.subimage, current_date)
+                result, text = ocr(current_node.subimage, current_date)
             for date in result:
                 temp_date:datetime.datetime=str_to_datetime(date)
                 if temp_date>current_date:
                     if not newer_detected:
                         newer_detected=True
                         dates={}
+                        texts={}
                     smallest_row=current_node.row_height
                     if current_node.row_height not in dates:
                         dates[current_node.row_height]={}
+                        texts[current_node.row_height]={}
                     if date not in dates[current_node.row_height]:
                         dates[current_node.row_height][date]=[]
+                        texts[current_node.row_height][date]=[]
                     dates[current_node.row_height][date].append(current_node)
+                    texts[current_node.row_height][date].append(text)
                 else:
                     if not newer_detected:
                         if current_node.row_height not in dates:
                             dates[current_node.row_height]={}
+                            texts[current_node.row_height]={}
                         if date not in dates[current_node.row_height]:
                             dates[current_node.row_height][date]=[]
+                            texts[current_node.row_height][date]=[]
                         dates[current_node.row_height][date].append(current_node)#past nodes
+                        texts[current_node.row_height][date].append(text)
             for child in current_node.children: #append all child to queue
                 queue.append(child)
     if noprune:
-        for value in dates.values():
-            output_summary(value,img_path)
+        for key, value in dates.items():
+            output_summary(value,img_path,texts[key])
     else:
         smallest_dates:dict[str,list[OCR_Node]]={}
+        smallest_dates_text : dict[int,dict[str,list[OCR_Node]]]={}
         if smallest_row!=121:
             smallest_dates=dates[smallest_row]#there exists dates in the image file
+            smallest_dates_text = texts[smallest_row]
         print("Displaying output-",smallest_row)
         print(smallest_dates)
-        output_summary(smallest_dates,img_path)
+        output_summary(smallest_dates,img_path,smallest_dates_text)
