@@ -1,4 +1,5 @@
 from cgitb import small
+from hmac import new
 # import os
 # from subprocess import NORMAL_PRIORITY_CLASS
 # from PIL import Image
@@ -29,7 +30,7 @@ class OCR_Node:
         self.is_dummy = True 
 
 #start of stage 3
-def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datetime,noprune:bool)->None:
+def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datetime,noprune:bool)->int:
     newer_detected=False
     queue:list[OCR_Node]=[]
     dates:dict[int,dict[str,list[OCR_Node]]]={}
@@ -83,3 +84,10 @@ def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datet
         print("Displaying output-",smallest_row)
         print(smallest_dates)
         output_summary(smallest_dates,img_path,smallest_dates_text)
+    if newer_detected:
+        return 0
+    else:
+        if dates:
+            return 1
+        else:
+            return 2
