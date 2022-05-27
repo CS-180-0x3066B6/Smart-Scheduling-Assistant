@@ -4,7 +4,6 @@ import dateutil.parser as parser
 import dateutil.relativedelta as rel
 
 
-global_date = 0
 weekdays = [("Mon", "Monday"),
             ("Tue", "Tuesday"),
             ("Wed", "Wednesday"),
@@ -57,7 +56,7 @@ days = [('1', '1st'),
         ('31', '31st')]
 
 
-def parseCategorizer(image_text):
+def parseCategorizer(image_text, current_date):
     """
     Finds the date of the image.
     """
@@ -70,29 +69,29 @@ def parseCategorizer(image_text):
     try:
         date, date_format = coreParser(date_str)
         if date != None:
-            if date > global_date:
+            if date >= current_date:
                 dates.append(date.strftime(date_format))
 
     # If the date is not found by dateutil.parser, statically check for date insights
     except parser.ParserError:
         date = dateInsightChecking(date_str)
         if date != None:
-            if date > global_date:
+            if date >= current_date:
                 dates.append(date.strftime(date_format))
 
     # If multiple dates are found by dateutil.parser, split the string and parse each string
     except parser.ParserError2:
-        mult_dates = find_date(date_str, global_date)
+        if(date_str.split()[0] == date_str):
+            mult_dates = []
+        else:
+            mult_dates = find_date(date_str, current_date)
         dates.extend(mult_dates)
     
     return dates
 
 
 def find_date(date_str, current_date):
-    print(current_date)
-    print(global_date)
-    global_date = current_date
-    print(global_date)
+    assert(current_date != None)
     # Check for the number of words in date_str
     
     firstHalf, secondHalf = dateSplit(date_str)
@@ -103,9 +102,9 @@ def find_date(date_str, current_date):
     str2 = str2.replace(',', ' ')
 
     # Try for first half of the string
-    dates1 = parseCategorizer(str1)
+    dates1 = parseCategorizer(str1, current_date)
     # Try for second half of the string
-    dates2 = parseCategorizer(str2)
+    dates2 = parseCategorizer(str2, current_date)
 
     return dates1 + dates2
 
@@ -242,4 +241,4 @@ def coreParser(date_str):
 # print(find_date("The deadline is on the 28th of February and 16th of March"))
 # print(find_date("16th and 17th of January 2020"))
 # print(find_date("May 2022 and June 2022 and July 2022"))
-print(find_date("Not April 17 2020, March 15,2019", datetime.datetime.now()))
+# print(find_date("Not April 17 2020, March 15,2019", datetime.datetime.now()))
