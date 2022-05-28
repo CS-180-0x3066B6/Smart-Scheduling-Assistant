@@ -82,7 +82,6 @@ def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datet
             smallest_dates=dates[smallest_row]#there exists dates in the image file
             smallest_dates_text = texts[smallest_row]
         print("Displaying output-",smallest_row)
-        print(smallest_dates)
         output_summary(smallest_dates,img_path,smallest_dates_text)
     if newer_detected:
         return 0

@@ -15,8 +15,6 @@ class OCR_Node:
 
 # Data to be written
 def output_summary(parsed_dates:dict, img_path:str, text):
-    print("STAGE 6")
-    print(text)
 
 
     # Create a list of items to convert to JSON

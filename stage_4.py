@@ -5,6 +5,7 @@ from Stage_5 import find_date
 imagedata = np.ndarray
 
 def ocr(some_subimage : imagedata, current_date):
+    print("*****************************************************")
     assert(current_date != None)
     text =pytesseract.image_to_string(some_subimage)
     assert(type(text)==str)
@@ -13,7 +14,8 @@ def ocr(some_subimage : imagedata, current_date):
     found_dates = find_date(text, current_date)
     assert(type(found_dates) == list)
     print("Found Dates: " + str(found_dates))
-    print()
+    print("*****************************************************")
+    assert(type(found_dates) == list)
     return found_dates, text
   
 def ocr_test():  

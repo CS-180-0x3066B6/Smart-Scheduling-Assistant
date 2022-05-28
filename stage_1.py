@@ -47,11 +47,11 @@ def import_data(datapath:path,noprune:bool=False)->None:
     count=0
     reset_data()
     for file in os.listdir(datapath):
-        print("-----------------------------------")
+        print("--------------------------------------------------------------------------------")
         if count==10:
             break
         if file.endswith(".tif"):
-            print(file)
+            print("FILENAME: " + file)
             current_date_file=open("current_date.txt",'r')
             date_lines=current_date_file.readlines()
             for date_line in date_lines:
@@ -64,7 +64,7 @@ def import_data(datapath:path,noprune:bool=False)->None:
             imgdata:imagedata=cv2.imread(full_directory)
             assert(current_date != None)
             image_divider(imgdata,full_directory,current_date,noprune)
-            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         count+=1
         
 if __name__=="__main__":
