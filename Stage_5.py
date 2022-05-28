@@ -54,7 +54,7 @@ days = [('1', '1st'),
         ('29', '29th'),
         ('30', '30th'),
         ('31', '31st')]
-
+conjunctions = ["and", "or", "but", "for", "nor", "yet", "so", "\n", "to","$"]
 
 def parseCategorizer(image_text, current_date):
     """
@@ -65,18 +65,19 @@ def parseCategorizer(image_text, current_date):
     date_format = "%m-%d-%Y" # Initialize default date_format
     date = None # Initialize date variable
     dates = []
-
     try:
-        date, date_format = coreParser(date_str, current_date)
-        if date != None:
-            if date >= current_date:
-                dates.append(date.strftime(date_format))
+        parser.parse(date_str, fuzzy = True)
+        parsed_dates, date_formats = coreParser(date_str, current_date)
+        for parsedDate in parsed_dates:
+            if parsedDate != None:
+                if parsedDate >= current_date and parsedDate < datetime.datetime(year=2050, month=12, day=31):
+                    dates.append(parsedDate.strftime(date_formats[parsedDate]))
 
     # If the date is not found by dateutil.parser, statically check for date insights
     except parser.ParserError:
         date = dateInsightChecking(date_str, current_date)
         if date != None:
-            if date >= current_date:
+            if date >= current_date and date < datetime.datetime(year=2050, month=12, day=31):
                 dates.append(date.strftime(date_format))
 
     # If multiple dates are found by dateutil.parser, split the string and parse each string
@@ -86,11 +87,23 @@ def parseCategorizer(image_text, current_date):
         else:
             mult_dates = find_date(date_str, current_date)
         dates.extend(mult_dates)
+
+    except parser.ParserError3:
+        elements = date_str.split()
+        try:
+            elements.pop(-2)
+        except:
+            pass
+        date, date_formats = coreParser(" ".join(elements), current_date)
+        if len(date) >0:
+            dates.append(date[0].strftime(date_formats[date[0]]))
+        
     
     return dates
 
 
 def find_date(date_str, current_date):
+    print(date_str)
     assert(current_date != None)
     # Check for the number of words in date_str
     
@@ -98,8 +111,10 @@ def find_date(date_str, current_date):
 
     str1 = " ".join(firstHalf)
     str1 = str1.replace(',', ' ')
+    str1 = str1.replace('-', ' to ')
     str2 = " ".join(secondHalf)
     str2 = str2.replace(',', ' ')
+    str2 = str2.replace('-', ' to ')
 
     # Try for first half of the string
     dates1 = parseCategorizer(str1, current_date)
@@ -110,14 +125,10 @@ def find_date(date_str, current_date):
 
 
 def dateSplit(date_str):
-    if ("\n" in date_str):
-        str_words = date_str.splitlines()
-    else:
-        str_words = date_str.split()
+    str_words = date_str.split()
 
     firstHalf = str_words[:1]
     secondHalf = str_words[1:]
-    conjunctions = ["and", "or", "but", "for", "nor", "yet", "so", "\n"]
 
     while True:
         try:
@@ -131,6 +142,8 @@ def dateSplit(date_str):
             secondHalf.insert(0, firstHalf.pop())
             break
         except parser.ParserError:      # If it gets an error about the date being invalid, just continue
+            pass
+        except parser.ParserError3:      # If it gets an error about the date being invalid, just continue
             pass
         except IndexError:
             break
@@ -193,9 +206,9 @@ def dateElementChecking(date_str, date):
     elif isDay:
         return "%m-%d-%Y"
     elif isMonth:
-        return "%m-%Y"
+        return "%m-%d-%Y"
     else:
-        return "%Y"
+        return "%m-%d-%Y"
 
 
 
@@ -207,16 +220,29 @@ def coreParser(date_str, current_date):
     - Check for dates in the string (only works when one date in string)
     - Return date_format depending on the only existing date elements in the string (If only "January 2020" is passed, return "%m %Y")
     """
-    # Parse the date from the date_str
-    date, tokens = parser.parse(default = current_date, timestr = date_str, fuzzy_with_tokens = True)
+    # Split the string into a list separated by newlines
+    str_words = date_str.splitlines()
+    dates_in_string = []
+    date_formats = {}
+    for i in str_words:
+        print(i)
+        try:
+            date = parser.parse(default = current_date, 
+                                timestr = i, 
+                                fuzzy = True)
+            # Check for the only existing date elements in the image text.
+            date_format = dateElementChecking(date_str, date)
+            dates_in_string.append(date)
+            date_formats[date] = date_format
 
+        except parser.ParserError: # No date found
+            continue
 
+        except parser.ParserError3:
+            continue
+  
 
-    # Check for the only existing date elements in the image text.
-    date_format = dateElementChecking(date_str, date)
-    
-
-    return date,date_format
+    return dates_in_string,date_formats
 
 
 
@@ -242,6 +268,6 @@ def coreParser(date_str, current_date):
 # print(find_date("January 1, 2020, Feb 1, 2021"))
 
 # print(find_date("The deadline is on the 28th of February and 16th of March"))
-# print(find_date("16th and 17th of January 2020"))
+# print(find_date("16th and 17th of January 2020",datetime.datetime.now()))
 # print(find_date("May 2022 and June 2022 and July 2022"))
-# print(find_date("Not April 17 2020, March 15,2019", datetime.datetime.now()))
+# print(find_date("2/28/1983", datetime.datetime.now()))

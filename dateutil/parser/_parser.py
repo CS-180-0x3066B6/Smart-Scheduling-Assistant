@@ -49,7 +49,7 @@ from warnings import warn
 from .. import relativedelta
 from .. import tz
 
-__all__ = ["parse", "parserinfo", "ParserError", "ParserError2"]
+__all__ = ["parse", "parserinfo", "ParserError", "ParserError2", "ParserError3"]
 
 
 # TODO: pandas.core.tools.datetimes imports this explicitly.  Might be worth
@@ -648,7 +648,7 @@ class parser(object):
         try:
             ret = self._build_naive(res, default)
         except ValueError as e:
-            six.raise_from(ParserError(str(e) + ": %s", timestr), e)
+            six.raise_from(ParserError3(str(e) + ": %s", timestr), e)
 
         if not ignoretz:
             ret = self._build_tzaware(ret, res, tzinfos)
@@ -1617,6 +1617,24 @@ class ParserError2(ValueError):
             return self.args[0] % self.args[1:]
         except (TypeError, IndexError):
             return super(ParserError2, self).__str__()
+
+    def __repr__(self):
+        args = ", ".join("'%s'" % arg for arg in self.args)
+        return "%s(%s)" % (self.__class__.__name__, args)
+
+class ParserError3(ValueError):
+    """Third Exception subclass used for any failure to parse a datetime string.
+
+    This is a subclass of :py:exc:`ValueError`, and should be raised any time
+    earlier versions of ``dateutil`` would have raised ``ValueError``.
+
+    .. versionadded:: 2.8.1
+    """
+    def __str__(self):
+        try:
+            return self.args[0] % self.args[1:]
+        except (TypeError, IndexError):
+            return super(ParserError3, self).__str__()
 
     def __repr__(self):
         args = ", ".join("'%s'" % arg for arg in self.args)

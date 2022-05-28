@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ._parser import parse, parser, parserinfo, ParserError, ParserError2
+from ._parser import parse, parser, parserinfo, ParserError, ParserError2, ParserError3
 from ._parser import DEFAULTPARSER, DEFAULTTZPARSER
 from ._parser import UnknownTimezoneWarning
 
@@ -9,7 +9,7 @@ from .isoparser import isoparser, isoparse
 
 __all__ = ['parse', 'parser', 'parserinfo',
            'isoparse', 'isoparser',
-           'ParserError', 'ParserError2',
+           'ParserError', 'ParserError2','ParserError3',
            'UnknownTimezoneWarning']
 
 
