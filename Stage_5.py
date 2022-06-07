@@ -155,7 +155,7 @@ def parseCategorizer(image_text, current_date):
 def remove_alphanumerics(date_str: str)->str:
     print("Accessing Alphanumeric Remover")
     words = date_str.split()
-    numeric = [str(x) for x in range(10)]
+    numeric = [str(x) for x in range(10)]+[",",".","/","-"]
     for word_index in range(len(words)):
         word: str = words[word_index] 
         contains_non_numeric = False
