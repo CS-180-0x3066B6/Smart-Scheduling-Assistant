@@ -7,8 +7,6 @@ import cv2
 
 # Data to be written
 def output_summary(parsed_dates:dict, img_path:str, text):
-
-
     # Create a list of items to convert to JSON
     json_list = []
 
@@ -50,8 +48,6 @@ def output_summary(parsed_dates:dict, img_path:str, text):
             cv2.imwrite(r_number+".png", subimg)    
             os.chdir(owd)       
         
-        # Add the dictionary to the list if date is not in the past
-        # if datetime.datetime.strptime(date, "%m %d %Y") > currentDate:
             json_list.append(json_dict)
 
     # Check if file exists, create new if no, append if yes
