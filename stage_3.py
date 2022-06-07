@@ -32,6 +32,7 @@ class OCR_Node:
 #start of stage 3
 def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datetime,noprune:bool)->int:
     newer_detected=False
+    current_date_found=False
     queue:list[OCR_Node]=[]
     dates:dict[int,dict[str,list[OCR_Node]]]={}
     texts : dict[int,dict[str,list[OCR_Node]]]={}
@@ -44,7 +45,9 @@ def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datet
             result=[]
             if not current_node.is_dummy:  
                 result, text = ocr(current_node.subimage, current_date)
+                print(result)
             for date in result:
+                print("found date in =>",date,current_node.subimage)
                 temp_date:datetime.datetime=str_to_datetime(date)
                 if temp_date>current_date:
                     if not newer_detected:
@@ -62,6 +65,7 @@ def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datet
                     texts[current_node.row_height][date].append(text)
                 else:
                     if not newer_detected:
+                        current_date_found=True
                         if current_node.row_height not in dates:
                             dates[current_node.row_height]={}
                             texts[current_node.row_height]={}
@@ -81,12 +85,13 @@ def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datet
         if smallest_row!=121:
             smallest_dates=dates[smallest_row]#there exists dates in the image file
             smallest_dates_text = texts[smallest_row]
-        print("Displaying output-",smallest_row)
+        else:
+            if not current_date_found:
+                return 2
+        print("Displaying output->",smallest_row,smallest_dates)
+        for key, value in smallest_dates.items():
+            print(value[0].row_height,value[0].row_number)
         output_summary(smallest_dates,img_path,smallest_dates_text)
     if newer_detected:
         return 0
-    else:
-        if dates:
-            return 1
-        else:
-            return 2
+    return 1

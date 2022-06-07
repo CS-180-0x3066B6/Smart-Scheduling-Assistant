@@ -5,14 +5,12 @@ import datetime
 imagedata = numpy.ndarray
 path = str
 class OCR_Node:
-    def __init__(self,row_height:int = -1, row_number:int = -1):
-        assert(type(row_height) == int)
-        assert(type(row_number == int))
-        self.row_height = row_height 
-        self.row_number:int = row_number 
-        self.children: list[OCR_Node]= list() 
-        self.subimage: Optional[imagedata] = None
-        self.is_dummy = True 
+      def __init__(self,row_height:int = -1, row_number:int = -1):
+          self.row_height = row_height
+          self.row_number:int = row_number
+          self.children: list[OCR_Node]= list()
+          self.subimage: Optional[imagedata] = None
+          self.is_dummy = True
 
 def subdivide(size: int, some_image: imagedata)->OCR_Node:
     assert(type(size) == int);
@@ -60,11 +58,21 @@ def image_divider(some_image: imagedata, img_path: path, current_date:  datetime
     assert(type(some_image) == imagedata)
     assert(type(img_path) == path)
     #image_height = len(some_image)
-    step_sizes = [45,50,55,95,100,105,145,150,155]
-    print(step_sizes)
-    children: list[OCR_Node] = []
-    for size in step_sizes:
-        children.append(subdivide(size,some_image))
-    top_node = OCR_Node()
-    top_node.children = children
-    bfs_selector(top_node,img_path,current_date, noprune)
+    sizes_tried: set[int] = set()
+    tri_point = [30,80,130]
+    twenties = [20,40,60,100,120]
+    fine_sizes = [x for x in range(20,161,3)]
+    ultrafine_sizes = [x for x in range(20,161)]
+    settings = [tri_point,twenties,fine_sizes, ultrafine_sizes]
+    for setting in settings:
+        if setting is ultrafine_sizes:
+            print("Tried using ultrafine on ",img_path)
+        children: list[OCR_Node] = []
+        for size in setting:
+            if size not in sizes_tried:
+                children.append(subdivide(size,some_image))
+                sizes_tried.add(size)
+        top_node = OCR_Node()
+        top_node.children = children
+        if bfs_selector(top_node,img_path,current_date, noprune) != 2:
+            break

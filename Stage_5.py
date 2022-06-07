@@ -1,5 +1,5 @@
 import datetime
-
+import json
 import dateutil.parser as parser
 import dateutil.relativedelta as rel
 
@@ -23,6 +23,13 @@ months= [('Jan', 'January'),
         ('Oct', 'October'), 
         ('Nov', 'November'), 
         ('Dec', 'December')]
+# make a list of the months list but not in a tuple
+months_list = []
+for month in months:
+    months_list.append(month[0].lower())
+    months_list.append(month[1].lower())
+months_30 = ['january', 'march', 'may', 'july', 'august', 'october', 'december']
+months_31 = ['april', 'june', 'september', 'november']
 days = [('1', '1st'),
         ('2', '2nd'),
         ('3', '3rd'),
@@ -54,9 +61,32 @@ days = [('1', '1st'),
         ('29', '29th'),
         ('30', '30th'),
         ('31', '31st')]
+days_list = []
+for day in days:
+    days_list.append(day[0])
+    days_list.append(day[1])
 conjunctions = ["and", "or", "but", "for", "nor", "yet", "so", "\n", "to","$"]
 
+
+
+
+
+def check_misspelling(date_str):
+    # Create a dictionary of months as values and possible misspellings as keys 
+    date_str_list = date_str.split()
+    master = {}
+    with open('misspellings.txt', 'r') as file:
+        master = json.load(file)
+    # Check the date_str if it contains the key of the months dictionary. If it does, replace the key with the value
+    for item in date_str_list:
+        if item.lower() in master:
+            date_str = date_str.replace(item, master[item.lower()])
+    return date_str
+
+
+
 def parseCategorizer(image_text, current_date):
+    print("Image Text: " + image_text)
     """
     Finds the date of the image.
     """
@@ -89,33 +119,91 @@ def parseCategorizer(image_text, current_date):
         dates.extend(mult_dates)
 
     except parser.ParserError3:
-        elements = date_str.split()
-        try:
-            elements.pop(-2)
-        except:
-            pass
-        date, date_formats = coreParser(" ".join(elements), current_date)
-        if len(date) >0:
-            dates.append(date[0].strftime(date_formats[date[0]]))
+        str_words = date_str.split()
+
+        firstHalf = str_words[:-1]
+        secondHalf = str_words[-1:]
         
-    
+        while True:
+            try:
+                nextItem = firstHalf.pop()
+                secondHalf.insert(0, nextItem)
+                parser.parse(" ".join(secondHalf), fuzzy = True)
+                
+            except parser.ParserError2:
+                pass
+            except parser.ParserError:      # If it gets an error about the date being invalid, just continue
+                pass
+            except parser.ParserError3:      # If it gets an error about the date being invalid, just continue
+                firstHalf.append(secondHalf.pop(0))
+                break
+            except IndexError:
+                break
+        
+        parsed_dates, date_formats = coreParser(date_str, current_date)
+        for parsedDate in parsed_dates:
+            if parsedDate != None:
+                if parsedDate >= current_date and parsedDate < datetime.datetime(year=2050, month=12, day=31):
+                    dates.append(parsedDate.strftime(date_formats[parsedDate]))
+        
+    # remove dates in the list that are earlier than 1800
+
+    # use strptime to convert the dates to datetime objects
+
     return dates
+
+
+
+def remove_alphanumerics(date_str: str)->str:
+    print("Accessing Alphanumeric Remover")
+    words = date_str.split()
+    alphabetic = [chr(x) for x in range(ord("a"),ord("z")+1)]
+    numeric = [str(x) for x in range(10)]
+    for word_index in range(len(words)):
+        word: str = words[word_index] 
+        contains_alphabetic = False
+        contains_numeric = False
+        for character in alphabetic:
+            if character in word.lower():
+                contains_alphabetic = True
+                break
+        for character in numeric:
+            if character in word:
+                contains_numeric = True
+                break
+        if contains_alphabetic and contains_numeric:
+            print("Removing ",word)
+            words[word_index] = ""
+
+         
+    return " ".join(words)
 
 
 def find_date(date_str, current_date):
     print(date_str)
     assert(current_date != None)
     # Check for the number of words in date_str
+    date_str = date_str.replace('Â', ' ')
+    date_str = date_str.replace('\\', ' ')
+    date_str = date_str.replace('.', ' ')
+    date_str = date_str.replace(',', ' ')
+    date_str = date_str.replace('$', '9999')
+    date_str = date_str.replace('', '9999')
+    date_str = date_str.replace('&', '9999')
+    date_str = date_str.replace('%', '9999')
+    date_str = date_str.replace('#', '9999')
+    date_str = date_str.replace('@', '9999')
     
-    firstHalf, secondHalf = dateSplit(date_str)
+    date_str = check_misspelling(date_str)
+    date_str = remove_alphanumerics(date_str)
+    firstHalf, secondHalf, validDay = dateSplit(date_str)
 
     str1 = " ".join(firstHalf)
-    str1 = str1.replace(',', ' ')
     str1 = str1.replace('-', ' to ')
+    str1 = str1.replace('/', ' ')
     str2 = " ".join(secondHalf)
-    str2 = str2.replace(',', ' ')
     str2 = str2.replace('-', ' to ')
-
+    str2 = str2.replace('/', ' ')
     # Try for first half of the string
     dates1 = parseCategorizer(str1, current_date)
     # Try for second half of the string
@@ -125,7 +213,57 @@ def find_date(date_str, current_date):
 
 
 def dateSplit(date_str):
+    validDay = None
     str_words = date_str.split()
+
+    for i in range(len(str_words)):
+        try:
+            intNextItem = int(str_words[i])
+            # if intNextItem is greater than 2000 and less than 1900, remove it from the string and replace with a space
+            if intNextItem > 3000 or intNextItem < 1900:
+                if intNextItem > 31:
+                    str_words[i] = " "
+                else:
+                    try:
+                        # check if this is a day. If it is not preceded or followed by a month, change it to space
+                        if str_words[i-1].lower() not in months_list and str_words[i+1].lower() not in months_list and str_words[i+1] != "of":
+                            str_words[i] = " "
+                        else:
+                            # Check if the day for the month is valid
+                            if str_words[i+1] == "of":
+                                if str_words[i+2].lower() in months_list:
+                                    validDay = intNextItem
+                                    str_words[i] = " "
+                            if intNextItem > 30 and (str_words[i-1].lower() not in months_31 or str_words[i+1].lower() not in months_31):
+                                str_words[i] = " "
+                            
+                            elif intNextItem > 29 and (str_words[i-1].lower() in "february" or str_words[i+1].lower() in "february"):
+                                str_words[i] = " "
+                            else:
+                                validDay = intNextItem
+                    except:
+                        pass
+        except:
+            if str_words[i] in days_list:
+                # Check if it is a day. if it is not preceded or followed by a month, change it to space
+                try:
+                    if str_words[i-1].lower() not in months_list and str_words[i+1].lower() not in months_list and str_words[i+1] != "of":
+                        str_words[i] = " "
+                        # Remove the suffix of the day like 1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th and change to 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+                    else:
+                        str_words[i] = " "
+                        validDay = int(str_words[i][:-2])
+                except:
+                    pass
+            elif "-" in str_words[i]:
+                try:
+                    # Count number of "-" in the string
+                    dashIdx = str_words[i].index("-")
+                    if str_words[i].count("-") == 1:
+                        if dashIdx == 2:
+                            str_words[i] = str_words[i][0:2]
+                except:
+                    pass
 
     firstHalf = str_words[:1]
     secondHalf = str_words[1:]
@@ -136,6 +274,8 @@ def dateSplit(date_str):
             if nextItem.lower() in conjunctions:
                 secondHalf.insert(0, nextItem)
                 break
+            
+            
             firstHalf.append(nextItem)
             parser.parse(" ".join(firstHalf), fuzzy = True)
         except parser.ParserError2:
@@ -148,7 +288,7 @@ def dateSplit(date_str):
         except IndexError:
             break
     
-    return firstHalf, secondHalf
+    return firstHalf, secondHalf, validDay
 
 def dateInsightChecking(date_str, current_date):
     """
@@ -172,7 +312,7 @@ def dateInsightChecking(date_str, current_date):
 
 
 
-def dateElementChecking(date_str, date):
+def dateElementChecking(date_str, date, current_date):
     # Boolean placeholders for whether a month or a day is found in the string
     isMonth = True
     isDay = True
@@ -200,15 +340,27 @@ def dateElementChecking(date_str, date):
             isMonth = True
             isDay = True
 
+    # Check if the year is the current year, if yes, then check the string if the year is really there, if not, change it to the year from current_date
+    if date.year == today.year:
+        date_str = date_str.replace(str(date.day),"",1)
+        year_str = str(date.year)
+        year_str = year_str[-2:]
+            
+        if year_str not in date_str:
+            date = date.replace(year=current_date.year)
+        else:
+            date = date.replace(year=today.year)
+
     # Select date format appropriate based on the given date elements
     if isMonth and isDay:
-        return "%m-%d-%Y"
+        return "%m-%d-%Y", date
     elif isDay:
-        return "%m-%d-%Y"
+        # get the month from currentDate and replace the month in date with the current month
+        return "%d-%m-%Y", date.replace(month=current_date.month)
     elif isMonth:
-        return "%m-%d-%Y"
+        return "%m-%Y", date
     else:
-        return "%m-%d-%Y"
+        return "%Y", date
 
 
 
@@ -227,11 +379,11 @@ def coreParser(date_str, current_date):
     for i in str_words:
         print(i)
         try:
-            date = parser.parse(default = current_date, 
+            date = parser.parse( 
                                 timestr = i, 
                                 fuzzy = True)
             # Check for the only existing date elements in the image text.
-            date_format = dateElementChecking(date_str, date)
+            date_format, date = dateElementChecking(date_str, date, current_date)
             dates_in_string.append(date)
             date_formats[date] = date_format
 
@@ -241,8 +393,8 @@ def coreParser(date_str, current_date):
         except parser.ParserError3:
             continue
   
-
-    return dates_in_string,date_formats
+    
+    return dates_in_string, date_formats
 
 
 
@@ -269,5 +421,15 @@ def coreParser(date_str, current_date):
 
 # print(find_date("The deadline is on the 28th of February and 16th of March"))
 # print(find_date("16th and 17th of January 2020",datetime.datetime.now()))
-# print(find_date("May 2022 and June 2022 and July 2022"))
-# print(find_date("2/28/1983", datetime.datetime.now()))
+# "Ftom: Bob Thomas & Ass(\u201c iates ~ "" $35 Hopkins way 6 504 Redondo Beach  Calif   (213)"
+# print(find_date("Cc \u20ac\n\n\u00bb Apil 8, 1983\n\n   \n\f", datetime.datetime(1979,7,22)))
+# print(find_date("Ftom: Bob Thomas & Ass(\u201c iates ~ "" $35 Hopkins way 6 504 Redondo Beach  Calif   (213)", datetime.datetime(1979,7,22)))
+
+# print(find_date("Fto Bob Thomas & Ass( iates\n- \u00a355 Mopkins Way,\\7504\nRedond, Beach @airr. ones\n\n   \n\f", datetime.datetime(1979,7,22)))
+# print(find_date("Received\n\nAPR 43 1983\nSUBJECT: 3rd International Conference on\nIndoor Air Quality and Climate Dr. 1. $Y, Hughes\nStockholm, Aug. 20-24, 1984\n\nINFORMATIONAL MEMORANDUM\n\n \n\f", datetime.datetime(1979,7,22)))
+
+    
+# print(find_date("TR RANTS DR. LE. GAS DR. KR. OF  LIT/ENGER/ef/601 nate. \u2018 Sept 22 2022", datetime.datetime(1979,7,22)))
+# print(find_date("  \n\nFtom:. Bob Thomas & Ass(\u201c iates\n~ . \"\" $35 Hopkins way,6,504\nRedondo Beach, Calif. 90277\n\n(213) 376-6978\n\f", datetime.datetime(1979,7,22)))
+# " \n\noy taht\u2019 \u20ac6\n\f"
+# print(find_date(" \n\noy taht\u2019 \u20ac6\n\f", datetime.datetime(1985,5,14)))

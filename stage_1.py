@@ -13,7 +13,7 @@ import sys
 path=str
 imagedata=numpy.ndarray
 
-current_date:datetime.datetime=None
+current_date: datetime.datetime=None
 
 def reset_data():
     path1="60"
@@ -48,14 +48,15 @@ def import_data(datapath:path,noprune:bool=False)->None:
     reset_data()
     for file in os.listdir(datapath):
         print("--------------------------------------------------------------------------------")
-        if count==10:
-            break
+        #if count==100:
+            #break
         if file.endswith(".tif"):
             print("FILENAME: " + file)
             current_date_file=open("current_date.txt",'r')
             date_lines=current_date_file.readlines()
             for date_line in date_lines:
                 fname,current_str_date=date_line[:-1].split(' ')
+                #print(fname,file)
                 if fname==file:
                     current_date=str_to_datetime(current_str_date)
                     break
@@ -73,4 +74,4 @@ if __name__=="__main__":
     if "noprune" in args:
         import_data("Learning/Sample/",True) #path
     else:
-        import_data("Learning/Sample/")
+        import_data("Learning/Isolation/")
