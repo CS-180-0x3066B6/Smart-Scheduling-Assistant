@@ -11,56 +11,57 @@ weekdays = [("Mon", "Monday"),
             ("Fri", "Friday"),
             ("Sat", "Saturday"),
             ("Sun", "Sunday")]
-months= [('Jan', 'January'), 
-        ('Feb', 'February'), 
-        ('Mar', 'March'), 
-        ('Apr', 'April'), 
-        ('May', 'May'), 
-        ('Jun', 'June'), 
-        ('Jul', 'July'), 
-        ('Aug', 'August'), 
-        ('Sep', 'Sept', 'September'), 
-        ('Oct', 'October'), 
-        ('Nov', 'November'), 
-        ('Dec', 'December')]
+months= [['Jan', 'January'], 
+        ['Feb', 'February'], 
+        ['Mar', 'March'], 
+        ['Apr', 'April'], 
+        ['May', 'May'], 
+        ['Jun', 'June'], 
+        ['Jul', 'July'], 
+        ['Aug', 'August'], 
+        ['Sep', 'Sept', 'September'], 
+        ['Oct', 'October'], 
+        ['Nov', 'November'], 
+        ['Dec', 'December']]
 # make a list of the months list but not in a tuple
 months_list = []
 for month in months:
     months_list.append(month[0].lower())
     months_list.append(month[1].lower())
+    months_list.append("september")
 months_30 = ['january', 'march', 'may', 'july', 'august', 'october', 'december']
 months_31 = ['april', 'june', 'september', 'november']
-days = [('1', '1st'),
-        ('2', '2nd'),
-        ('3', '3rd'),
-        ('4', '4th'),
-        ('5', '5th'),
-        ('6', '6th'),
-        ('7', '7th'),
-        ('8', '8th'),
-        ('9', '9th'),
-        ('10', '10th'),
-        ('11', '11th'),
-        ('12', '12th'),
-        ('13', '13th'),
-        ('14', '14th'),
-        ('15', '15th'),
-        ('16', '16th'),
-        ('17', '17th'),
-        ('18', '18th'),
-        ('19', '19th'),
-        ('20', '20th'),
-        ('21', '21st'),
-        ('22', '22nd'),
-        ('23', '23rd'),
-        ('24', '24th'),
-        ('25', '25th'),
-        ('26', '26th'),
-        ('27', '27th'),
-        ('28', '28th'),
-        ('29', '29th'),
-        ('30', '30th'),
-        ('31', '31st')]
+days = [['1', '1st'],
+        ['2', '2nd'],
+        ['3', '3rd'],
+        ['4', '4th'],
+        ['5', '5th'],
+        ['6', '6th'],
+        ['7', '7th'],
+        ['8', '8th'],
+        ['9', '9th'],
+        ['10', '10th'],
+        ['11', '11th'],
+        ['12', '12th'],
+        ['13', '13th'],
+        ['14', '14th'],
+        ['15', '15th'],
+        ['16', '16th'],
+        ['17', '17th'],
+        ['18', '18th'],
+        ['19', '19th'],
+        ['20', '20th'],
+        ['21', '21st'],
+        ['22', '22nd'],
+        ['23', '23rd'],
+        ['24', '24th'],
+        ['25', '25th'],
+        ['26', '26th'],
+        ['27', '27th'],
+        ['28', '28th'],
+        ['29', '29th'],
+        ['30', '30th'],
+        ['31', '31st']]
 days_list = []
 for day in days:
     days_list.append(day[0])
@@ -179,9 +180,7 @@ def remove_alphanumerics(date_str: str)->str:
     return " ".join(words)
 
 
-def find_date(date_str, current_date):
-    print(date_str)
-    assert(current_date != None)
+def replace_characters(date_str: str)->str:
     # Check for the number of words in date_str
     date_str = date_str.replace('Â', ' ')
     date_str = date_str.replace('\\', ' ')
@@ -193,7 +192,13 @@ def find_date(date_str, current_date):
     date_str = date_str.replace('%', '9999')
     date_str = date_str.replace('#', '9999')
     date_str = date_str.replace('@', '9999')
-    
+    return date_str
+
+
+def find_date(date_str, current_date):
+    print(date_str)
+    assert(current_date != None)
+    date_str = replace_characters(date_str)
     date_str = check_misspelling(date_str)
     date_str = remove_alphanumerics(date_str)
     firstHalf, secondHalf, validDay = dateSplit(date_str)
@@ -233,7 +238,7 @@ def dateSplit(date_str):
                             if str_words[i+1] == "of":
                                 if str_words[i+2].lower() in months_list:
                                     validDay = intNextItem
-                                    str_words[i] = " "
+
                             if intNextItem > 30 and (str_words[i-1].lower() not in months_31 or str_words[i+1].lower() not in months_31):
                                 str_words[i] = " "
                             
@@ -251,7 +256,6 @@ def dateSplit(date_str):
                         str_words[i] = " "
                         # Remove the suffix of the day like 1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th and change to 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
                     else:
-                        str_words[i] = " "
                         validDay = int(str_words[i][:-2])
                 except:
                     pass
@@ -326,15 +330,17 @@ def dateElementChecking(date_str, date, current_date):
             if today.month == date.month:       # which will happen if the month is the same, thus we check if the current month is in the string
                 # Check if month really exists in string
                 for month in months[today.month-1]:
-                    if month not in date_str:
+                    if month.lower() not in date_str:
                         isMonth = False
+                    else:
                         break
 
             if today.day == date.day:
                 # Check if day really exists in string
                 for day in days[today.day-1]:
-                    if day not in date_str:
+                    if day.lower() not in date_str:
                         isDay = False
+                    else:
                         break
         else:
             isMonth = True
@@ -356,7 +362,7 @@ def dateElementChecking(date_str, date, current_date):
         return "%m-%d-%Y", date
     elif isDay:
         # get the month from currentDate and replace the month in date with the current month
-        return "%d-%m-%Y", date.replace(month=current_date.month)
+        return "%m-%d-%Y", date.replace(month=current_date.month)
     elif isMonth:
         return "%m-%Y", date
     else:
@@ -397,3 +403,4 @@ def coreParser(date_str, current_date):
     return dates_in_string, date_formats
 
 
+# print(find_date("NVO ICE septenber 7, 1972", datetime.datetime(1972, 1, 1)))
