@@ -41,7 +41,7 @@ def bfs_selector(root_node: OCR_Node, img_path: path,current_date:datetime.datet
         queue.append(child)
     while len(queue)>0:
         current_node=queue.pop(0)
-        if current_node.row_height<=smallest_row or noprune:
+        if current_node.row_height<=smallest_row:
             result=[]
             if not current_node.is_dummy:  
                 result, text = ocr(current_node.subimage, current_date)

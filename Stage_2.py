@@ -1,6 +1,6 @@
 from typing import Optional
 import numpy
-from stage_3 import bfs_selector
+from Stage_3 import bfs_selector
 import datetime
 imagedata = numpy.ndarray
 path = str
