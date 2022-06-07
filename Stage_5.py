@@ -132,7 +132,7 @@ def parseCategorizer(image_text, current_date):
                 parser.parse(" ".join(secondHalf), fuzzy = True)
                 
             except parser.ParserError2:
-                pass
+                firstHalf.append(secondHalf.pop(0))
             except parser.ParserError:      # If it gets an error about the date being invalid, just continue
                 pass
             except parser.ParserError3:      # If it gets an error about the date being invalid, just continue
@@ -195,7 +195,7 @@ def find_date(date_str, current_date):
     date_str = check_misspelling(date_str)
     date_str = remove_alphanumerics(date_str)
     date_str = replace_characters(date_str)
-    firstHalf, secondHalf, validDay = dateSplit(date_str)
+    firstHalf, secondHalf = dateSplit(date_str)
 
     str1 = " ".join(firstHalf)
     str1 = str1.replace('-', ' to ')
@@ -211,10 +211,7 @@ def find_date(date_str, current_date):
     return dates1 + dates2
 
 
-def dateSplit(date_str):
-    validDay = None
-    str_words = date_str.split()
-
+def dateValidity(str_words):
     for i in range(len(str_words)):
         try:
             intNextItem = int(str_words[i])
@@ -230,16 +227,13 @@ def dateSplit(date_str):
                         else:
                             # Check if the day for the month is valid
                             if str_words[i+1] == "of":
-                                if str_words[i+2].lower() in months_list:
-                                    validDay = intNextItem
+                                pass
 
                             if intNextItem > 30 and (str_words[i-1].lower() not in months_31 or str_words[i+1].lower() not in months_31):
                                 str_words[i] = " "
                             
                             elif intNextItem > 29 and (str_words[i-1].lower() in "february" or str_words[i+1].lower() in "february"):
                                 str_words[i] = " "
-                            else:
-                                validDay = intNextItem
                     except:
                         pass
         except:
@@ -249,8 +243,6 @@ def dateSplit(date_str):
                     if str_words[i-1].lower() not in months_list and str_words[i+1].lower() not in months_list and str_words[i+1] != "of":
                         str_words[i] = " "
                         # Remove the suffix of the day like 1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th and change to 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-                    else:
-                        validDay = int(str_words[i][:-2])
                 except:
                     pass
             elif "-" in str_words[i]:
@@ -262,7 +254,11 @@ def dateSplit(date_str):
                             str_words[i] = str_words[i][0:2]
                 except:
                     pass
+    return str_words
 
+def dateSplit(date_str):
+    str_words = date_str.split()
+    str_words = dateValidity(str_words)
     firstHalf = str_words[:1]
     secondHalf = str_words[1:]
     while True:
@@ -287,7 +283,7 @@ def dateSplit(date_str):
     
     print("HERE")
     print(firstHalf)
-    return firstHalf, secondHalf, validDay
+    return firstHalf, secondHalf
 
 def dateInsightChecking(date_str, current_date):
     """
@@ -398,4 +394,4 @@ def coreParser(date_str, current_date):
     return dates_in_string, date_formats
 
 
-print(find_date("‘JULY 22, 1980", datetime.datetime(1972, 1, 1)))
+print(find_date("fos Angeles Times eo0en 10-111-200", datetime.datetime(1972, 1, 1)))
