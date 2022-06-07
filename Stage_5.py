@@ -141,7 +141,7 @@ def parseCategorizer(image_text, current_date):
             except IndexError:
                 break
         
-        parsed_dates, date_formats = coreParser(date_str, current_date)
+        parsed_dates, date_formats = coreParser(firstHalf, current_date)
         for parsedDate in parsed_dates:
             if parsedDate != None:
                 if parsedDate >= current_date and parsedDate < datetime.datetime(year=2050, month=12, day=31):
