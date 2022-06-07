@@ -74,4 +74,4 @@ if __name__=="__main__":
     if "noprune" in args:
         import_data("Learning/Sample/",True) #path
     else:
-        import_data("Learning/Isolation/")
+        import_data("Learning/")
