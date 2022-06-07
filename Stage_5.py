@@ -192,9 +192,9 @@ def replace_characters(date_str: str)->str:
 def find_date(date_str, current_date):
     print(date_str)
     assert(current_date != None)
-    date_str = replace_characters(date_str)
     date_str = check_misspelling(date_str)
     date_str = remove_alphanumerics(date_str)
+    date_str = replace_characters(date_str)
     firstHalf, secondHalf, validDay = dateSplit(date_str)
 
     str1 = " ".join(firstHalf)
