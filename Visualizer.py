@@ -56,7 +56,7 @@ with open("data.json","r") as f:
         elif(len(datedict["date"]) == 7):
             date2 =  datedict["date"][-4:] + "-" + datedict["date"][:3] + days(datedict["date"][0:2]) 
         else:
-            date2 =  datedict["date"] + "12-31-" 
+            date2 =  datedict["date"] + "-12-31" 
         datedict.update({"datesort": date2})
         datelist.append(datedict)
 
