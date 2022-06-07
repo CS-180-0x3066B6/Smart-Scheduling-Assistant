@@ -147,9 +147,6 @@ def parseCategorizer(image_text, current_date):
                 if parsedDate >= current_date and parsedDate < datetime.datetime(year=2050, month=12, day=31):
                     dates.append(parsedDate.strftime(date_formats[parsedDate]))
         
-    # remove dates in the list that are earlier than 1800
-
-    # use strptime to convert the dates to datetime objects
 
     return dates
 
@@ -158,21 +155,17 @@ def parseCategorizer(image_text, current_date):
 def remove_alphanumerics(date_str: str)->str:
     print("Accessing Alphanumeric Remover")
     words = date_str.split()
-    alphabetic = [chr(x) for x in range(ord("a"),ord("z")+1)]
     numeric = [str(x) for x in range(10)]
     for word_index in range(len(words)):
         word: str = words[word_index] 
-        contains_alphabetic = False
+        contains_non_numeric = False
         contains_numeric = False
-        for character in alphabetic:
-            if character in word.lower():
-                contains_alphabetic = True
-                break
-        for character in numeric:
-            if character in word:
+        for character in word:
+            if character in numeric:
                 contains_numeric = True
-                break
-        if contains_alphabetic and contains_numeric:
+            if character not in numeric:
+                contains_non_numeric = True
+        if contains_non_numeric and contains_numeric:
             print("Removing ",word)
             words[word_index] = ""
 
