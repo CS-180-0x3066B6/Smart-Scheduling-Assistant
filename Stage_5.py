@@ -169,7 +169,7 @@ def remove_alphanumerics(date_str: str)->str:
             print("Removing ",word)
             words[word_index] = ""
 
-         
+    print(words)
     return " ".join(words)
 
 
@@ -185,6 +185,7 @@ def replace_characters(date_str: str)->str:
     date_str = date_str.replace('%', '9999')
     date_str = date_str.replace('#', '9999')
     date_str = date_str.replace('@', '9999')
+    date_str = date_str.replace("‘", " ")
     return date_str
 
 
@@ -264,7 +265,6 @@ def dateSplit(date_str):
 
     firstHalf = str_words[:1]
     secondHalf = str_words[1:]
-
     while True:
         try:
             nextItem = secondHalf.pop(0)
@@ -285,6 +285,8 @@ def dateSplit(date_str):
         except IndexError:
             break
     
+    print("HERE")
+    print(firstHalf)
     return firstHalf, secondHalf, validDay
 
 def dateInsightChecking(date_str, current_date):
@@ -396,4 +398,4 @@ def coreParser(date_str, current_date):
     return dates_in_string, date_formats
 
 
-# print(find_date("NVO ICE septenber 7, 1972", datetime.datetime(1972, 1, 1)))
+print(find_date("‘JULY 22, 1980", datetime.datetime(1972, 1, 1)))
