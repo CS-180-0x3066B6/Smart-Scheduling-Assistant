@@ -397,39 +397,3 @@ def coreParser(date_str, current_date):
     return dates_in_string, date_formats
 
 
-
-
-
-
-
-
-
-
-
-
-
-# Tests
-# print(find_date("Your bill is due on the 28th of February"))
-# print(find_date("Your bill is due on the 28th of May"))
-# print(find_date("The concert will be on Thursday"))
-# print(find_date("The deadline is on 2030"))
-# print(find_date("Dear Sir, tomorrow we will have a meeting"))
-# print(find_date("Dear Sir, next week we will have a meeting"))
-# print(find_date("Our meeting will be held next month"))
-
-# print(find_date("January 1, 2020, Feb 1, 2021"))
-
-# print(find_date("The deadline is on the 28th of February and 16th of March"))
-# print(find_date("16th and 17th of January 2020",datetime.datetime.now()))
-# "Ftom: Bob Thomas & Ass(\u201c iates ~ "" $35 Hopkins way 6 504 Redondo Beach  Calif   (213)"
-# print(find_date("Cc \u20ac\n\n\u00bb Apil 8, 1983\n\n   \n\f", datetime.datetime(1979,7,22)))
-# print(find_date("Ftom: Bob Thomas & Ass(\u201c iates ~ "" $35 Hopkins way 6 504 Redondo Beach  Calif   (213)", datetime.datetime(1979,7,22)))
-
-# print(find_date("Fto Bob Thomas & Ass( iates\n- \u00a355 Mopkins Way,\\7504\nRedond, Beach @airr. ones\n\n   \n\f", datetime.datetime(1979,7,22)))
-# print(find_date("Received\n\nAPR 43 1983\nSUBJECT: 3rd International Conference on\nIndoor Air Quality and Climate Dr. 1. $Y, Hughes\nStockholm, Aug. 20-24, 1984\n\nINFORMATIONAL MEMORANDUM\n\n \n\f", datetime.datetime(1979,7,22)))
-
-    
-# print(find_date("TR RANTS DR. LE. GAS DR. KR. OF  LIT/ENGER/ef/601 nate. \u2018 Sept 22 2022", datetime.datetime(1979,7,22)))
-# print(find_date("  \n\nFtom:. Bob Thomas & Ass(\u201c iates\n~ . \"\" $35 Hopkins way,6,504\nRedondo Beach, Calif. 90277\n\n(213) 376-6978\n\f", datetime.datetime(1979,7,22)))
-# " \n\noy taht\u2019 \u20ac6\n\f"
-# print(find_date(" \n\noy taht\u2019 \u20ac6\n\f", datetime.datetime(1985,5,14)))
